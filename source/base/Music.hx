@@ -1,26 +1,23 @@
 package base;
 
-import base.MusicSection.SwagSection;
+import base.MusicSection.SectionData;
 
 using StringTools;
 
-typedef SwagSong =
-{
+typedef MusicData = {
 	var song:String;
-    var things:Array<SwagSection>;
+	var things:Array<SectionData>;
 	var bpm:Float;
 }
 
-class Music
-{
+class Music {
 	public var song:String;
-    public var things:Array<SwagSection>;
+	public var things:Array<SectionData>;
 	public var bpm:Float;
 
-	public function new(song, things, bpm)
-	{
+	public function new(song, things, bpm) {
 		this.song = song;
-        this.things = things;
+		this.things = things;
 		this.bpm = bpm;
 	}
 }

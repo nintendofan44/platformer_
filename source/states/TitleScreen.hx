@@ -47,9 +47,12 @@ class TitleScreen extends MusicBeatState {
             enableCamScroll = true;
 
         trace(state);
-		sound = AssetPaths.music('tea-time'); // temporary music. by iflicky
-		FlxG.sound.playMusic(sound);
-		Conductor.changeBPM(105.0);
+
+        if (FlxG.sound.music == null) {
+            sound = AssetPaths.music('tea-time'); // temporary music. by iflicky
+            FlxG.sound.playMusic(sound);
+            Conductor.changeBPM(105.0);
+        }
 
         bg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.fromRGB(0, 166, 255));
 		bg.screenCenter();
@@ -204,8 +207,14 @@ class TitleScreen extends MusicBeatState {
         }
 	}
 
+    var lastBeatHit:Int = -1;
+
 	override public function beatHit() {
 		super.beatHit();
+
+		if (lastBeatHit == curBeat) {
+			return;
+		}
 
         if (curBeat % 1 == 0) {
             for (i in 0...titleArray.length) {
@@ -213,6 +222,8 @@ class TitleScreen extends MusicBeatState {
                 titleArray[i].updateHitbox();
             }
         }
+
+		lastBeatHit = curBeat;
 	}
 
 	override public function stepHit() {

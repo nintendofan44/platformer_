@@ -42,6 +42,12 @@ class PlayState extends CourseState {
 
 	override public function beatHit() {
 		super.beatHit();
+
+		if (lastBeatHit == curBeat) {
+			return;
+		}
+
+		lastBeatHit = curBeat;
 	}
 
 	override public function stepHit() {
@@ -62,8 +68,16 @@ class ScoreSubstate extends MusicBeatSubstate {
 		super.update(elapsed);
 	}
 
+	var lastBeatHit:Int = -1;
+
 	override public function beatHit() {
 		super.beatHit();
+
+		if (lastBeatHit == curBeat) {
+			return;
+		}
+
+		lastBeatHit = curBeat;
 	}
 
 	override public function stepHit() {

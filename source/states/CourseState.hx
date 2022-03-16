@@ -1,5 +1,12 @@
 package states;
 
+import shaders.ShaderEffect;
+import shaders.Light;
+import shaders.Shadow;
+import helpers.Utilities;
+import flixel.math.FlxMath;
+import flixel.FlxCamera;
+import openfl.Lib;
 import flixel.util.FlxCollision;
 import flixel.FlxG;
 import flixel.util.FlxColor;
@@ -11,6 +18,8 @@ import flixel.addons.editors.tiled.TiledObjectLayer;
 import flixel.addons.editors.tiled.TiledObject;
 import helpers.AssetPaths;
 import flixel.addons.editors.tiled.TiledMap;
+import openfl.filters.ShaderFilter;
+import openfl.filters.BitmapFilter;
 
 class CourseState extends MusicBeatState {
 	var levelBounds:FlxGroup;
@@ -22,8 +31,44 @@ class CourseState extends MusicBeatState {
 	var groundGroup:FlxTypedGroup<FlxSprite>;
 	var dirtGroup:FlxTypedGroup<FlxSprite>;
 
+	var gameWidth:Int = Lib.application.window.width;
+	var gameHeight:Int = Lib.application.window.height;
+	var zoom:Float = -1;
+	var windowWidth:Float = Lib.application.window.width;
+	var windowHeight:Float = Lib.application.window.height;
+
+	var mainCam:FlxCamera;
+	var hudCam:FlxCamera;
+	var defaultCamZoom:Float = 1;
+	var defaulthudCamZoom:Float = 1;
+	var camZoom:Float = 0.010;
+	var hudCamZoom:Float = 0.03;
+	var maxCamZoomLimit:Float = 1.35;
+
+	var hudShaders:Array<ShaderEffect> = [];
+	var mainShaders:Array<ShaderEffect> = [];
+	var light:Light;
+	var shadow:Shadow;
+
     function createCourse(levelName:String, playerSpawn:{x:Float, y:Float}) {
         final map = new TiledMap(AssetPaths.tmx('$levelName', 'levels'));
+
+		mainCam = new FlxCamera();
+		//hudCam = new FlxCamera();
+		//hudCam.bgColor.alpha = 0;
+
+		FlxG.cameras.reset(mainCam);
+		//FlxG.cameras.add(hudCam);
+
+		FlxCamera.defaultCameras = [mainCam];
+
+        persistentUpdate = true;
+		persistentDraw = true;
+
+		/*addShaderToCamera('game', new Light());
+		addShaderToCamera('hud', new Light());
+		addShaderToCamera('game', new Shadow());
+		addShaderToCamera('hud', new Shadow());*/
 
 		generateFloor(map);
 		generateWoodBlocks(map);
@@ -120,10 +165,21 @@ class CourseState extends MusicBeatState {
 		super.create();
 
 		bgColor = FlxColor.GRAY;
+
+		if (zoom == -1) {
+			var ratioX:Float = windowWidth / gameWidth;
+			var ratioY:Float = windowHeight / gameHeight;
+			zoom = Math.min(ratioX, ratioY);
+			gameWidth = Math.ceil(windowWidth / zoom);
+			gameHeight = Math.ceil(windowHeight / zoom);
+		}
 	}
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
+
+		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, Utilities.bound(1 - (elapsed * 3.125), 0, 1));
+		//hudCam.zoom = FlxMath.lerp(defaulthudCamZoom, hudCam.zoom, Utilities.bound(1 - (elapsed * 3.125), 0, 1));
 
 		FlxG.collide(player, levelBounds);
 		FlxG.collide(player, dirtGroup);
@@ -134,11 +190,94 @@ class CourseState extends MusicBeatState {
 		FlxG.collide(player, platformGroup);
 	}
 
+	var lastBeatHit:Int = -1;
+
 	override public function beatHit() {
 		super.beatHit();
+
+		if (lastBeatHit == curBeat) {
+			return;
+		}
+
+		if (FlxG.camera.zoom < maxCamZoomLimit && curBeat % 1 == 0) {
+			FlxG.camera.zoom += camZoom;
+			//hudCam.zoom += hudCamZoom;
+		}
+
+		lastBeatHit = curBeat;
 	}
 
 	override public function stepHit() {
 		super.stepHit();
+	}
+
+	public function addShaderToCamera(cam:String, effect:ShaderEffect) {
+
+		switch (cam.toLowerCase()) {
+			case 'hudCam' | 'hud':
+				hudShaders.push(effect);
+				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in hudShaders) {
+					newCamEffects.push(new ShaderFilter(i.shader));
+				}
+				hudCam.setFilters(newCamEffects);
+			case 'mainCam' | 'game':
+				mainShaders.push(effect);
+				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in mainShaders) {
+					newCamEffects.push(new ShaderFilter(i.shader));
+				}
+				mainCam.setFilters(newCamEffects);
+			default:
+				mainShaders.push(effect);
+				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in mainShaders) {
+					newCamEffects.push(new ShaderFilter(i.shader));
+				}
+				mainCam.setFilters(newCamEffects);
+		}
+	}
+
+	public function removeShaderFromCamera(cam:String, effect:ShaderEffect) {
+		switch (cam.toLowerCase()) {
+			case 'hudCam' | 'hud':
+				hudShaders.remove(effect);
+				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in hudShaders) {
+					newCamEffects.push(new ShaderFilter(i.shader));
+				}
+				hudCam.setFilters(newCamEffects);
+            case 'mainCam' | 'game':
+                mainShaders.remove(effect);
+				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in mainShaders) {
+					newCamEffects.push(new ShaderFilter(i.shader));
+				}
+				mainCam.setFilters(newCamEffects);
+			default:
+				mainShaders.remove(effect);
+				var newCamEffects:Array<BitmapFilter> = [];
+				for (i in mainShaders) {
+					newCamEffects.push(new ShaderFilter(i.shader));
+				}
+				mainCam.setFilters(newCamEffects);
+		}
+	}
+
+	public function clearShadersFromCamera(cam:String) {
+		switch (cam.toLowerCase()) {
+			case 'hudCam' | 'hud':
+				hudShaders = [];
+				var newCamEffects:Array<BitmapFilter> = [];
+				hudCam.setFilters(newCamEffects);
+            case 'mainCam' | 'game':
+                mainShaders = [];
+				var newCamEffects:Array<BitmapFilter> = [];
+				mainCam.setFilters(newCamEffects);
+			default:
+				mainShaders = [];
+				var newCamEffects:Array<BitmapFilter> = [];
+				mainCam.setFilters(newCamEffects);
+		}
 	}
 }

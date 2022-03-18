@@ -1,5 +1,7 @@
 package states;
 
+import helpers.Highscore;
+import states.LevelChooser;
 import flixel.FlxObject;
 import lime.system.System;
 import flixel.tweens.FlxTween;
@@ -43,6 +45,8 @@ class TitleScreen extends MusicBeatState {
 
 	override public function create()
 	{
+        Highscore.load();
+
         if (buttonArray.length > 2)
             enableCamScroll = true;
 
@@ -253,7 +257,7 @@ class TitleScreen extends MusicBeatState {
 		switch (stateToGo)
 		{
 			case 'playButton':
-				MusicBeatState.switchState(new PlayState());
+				MusicBeatState.switchState(new LevelChooser());
             case 'exitGame':
 				Sys.exit(0);
 		}		

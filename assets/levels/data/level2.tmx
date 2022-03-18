@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.8" tiledversion="1.8.2" orientation="orthogonal" renderorder="left-up" width="80" height="45" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="290">
+ <tileset firstgid="1" source="levelAssets.tsx"/>
+ <objectgroup id="8" name="Dirt" locked="1">
+  <object id="128" gid="7" x="0" y="720" width="128" height="16"/>
+  <object id="129" gid="7" x="128" y="720" width="128" height="16"/>
+  <object id="130" gid="7" x="256" y="720" width="128" height="16"/>
+  <object id="131" gid="7" x="384" y="720" width="128" height="16"/>
+  <object id="132" gid="7" x="512" y="720" width="128" height="16"/>
+  <object id="133" gid="7" x="640" y="720" width="128" height="16"/>
+  <object id="134" gid="7" x="768" y="720" width="128" height="16"/>
+  <object id="135" gid="7" x="896" y="720" width="128" height="16"/>
+  <object id="136" gid="7" x="1024" y="720" width="128" height="16"/>
+  <object id="137" gid="7" x="1152" y="720" width="128" height="16"/>
+  <object id="239" gid="7" x="496" y="656" width="128" height="16"/>
+ </objectgroup>
+ <objectgroup id="3" name="Grass" locked="1">
+  <object id="16" gid="8" x="1152" y="704" width="128" height="16"/>
+  <object id="17" gid="8" x="1024" y="704" width="128" height="16"/>
+  <object id="18" gid="8" x="896" y="704" width="128" height="16"/>
+  <object id="19" gid="8" x="768" y="704" width="128" height="16"/>
+  <object id="20" gid="8" x="640" y="704" width="128" height="16"/>
+  <object id="21" gid="8" x="512" y="704" width="128" height="16"/>
+  <object id="22" gid="8" x="384" y="704" width="128" height="16"/>
+  <object id="23" gid="8" x="256" y="704" width="128" height="16"/>
+  <object id="24" gid="8" x="128" y="704" width="128" height="16"/>
+  <object id="25" gid="8" x="0" y="704" width="128" height="16"/>
+  <object id="237" gid="8" x="352" y="656" width="128" height="16"/>
+ </objectgroup>
+ <objectgroup id="5" name="Wood">
+  <object id="235" gid="4" x="176" y="656" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup id="9" name="noclipWood"/>
+ <objectgroup id="4" name="Bricks">
+  <object id="233" gid="1" x="112" y="656" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup id="6" name="Door">
+  <object id="234" gid="2" x="144" y="640" width="16" height="32"/>
+ </objectgroup>
+ <objectgroup id="7" name="Platforms">
+  <object id="236" gid="6" x="208" y="656" width="128" height="16"/>
+ </objectgroup>
+ <objectgroup id="10" name="Coins">
+  <object id="266" gid="10" x="240" y="640" width="16" height="16"/>
+  <object id="267" gid="10" x="272" y="640" width="16" height="16"/>
+  <object id="268" gid="10" x="256" y="640" width="16" height="16"/>
+  <object id="269" gid="10" x="288" y="640" width="16" height="16"/>
+  <object id="270" gid="10" x="240" y="624" width="16" height="16"/>
+  <object id="271" gid="10" x="256" y="624" width="16" height="16"/>
+  <object id="272" gid="10" x="272" y="624" width="16" height="16"/>
+  <object id="273" gid="10" x="288" y="624" width="16" height="16"/>
+  <object id="274" gid="10" x="240" y="608" width="16" height="16"/>
+  <object id="275" gid="10" x="256" y="608" width="16" height="16"/>
+  <object id="276" gid="10" x="272" y="608" width="16" height="16"/>
+  <object id="277" gid="10" x="288" y="608" width="16" height="16"/>
+  <object id="278" gid="10" x="224" y="608" width="16" height="16"/>
+  <object id="279" gid="10" x="224" y="624" width="16" height="16"/>
+  <object id="280" gid="10" x="224" y="640" width="16" height="16"/>
+  <object id="281" gid="10" x="304" y="608" width="16" height="16"/>
+  <object id="282" gid="10" x="304" y="624" width="16" height="16"/>
+  <object id="283" gid="10" x="304" y="640" width="16" height="16"/>
+  <object id="284" gid="10" x="224" y="592" width="16" height="16"/>
+  <object id="285" gid="10" x="240" y="592" width="16" height="16"/>
+  <object id="286" gid="10" x="256" y="592" width="16" height="16"/>
+  <object id="287" gid="10" x="272" y="592" width="16" height="16"/>
+  <object id="288" gid="10" x="304" y="592" width="16" height="16"/>
+  <object id="289" gid="10" x="288" y="592" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup id="11" name="Trophy">
+  <object id="265" gid="9" x="1248" y="672" width="16" height="32"/>
+ </objectgroup>
+</map>

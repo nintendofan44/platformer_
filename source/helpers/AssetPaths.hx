@@ -5,6 +5,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 
+using StringTools;
+
 class AssetPaths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
@@ -100,9 +102,26 @@ class AssetPaths
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
+	inline static public function levelIcon(key:String, ?library:String)
+	{
+		return getPath('icons/$key.png', IMAGE, library);
+	}
+
 	inline static public function font(key:String)
 	{
 		return 'assets/fonts/$key';
+	}
+
+	inline static public function formatToLevelPath(path:String) {
+		return path.toLowerCase().replace(' ', '-');
+	}
+
+	inline static public function fileExists(key:String, type:AssetType, ?library:String)
+	{
+		if(OpenFlAssets.exists(getPath(key, type, library))) {
+			return true;
+		}
+		return false;
 	}
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)

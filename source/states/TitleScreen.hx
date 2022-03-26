@@ -257,7 +257,7 @@ class TitleScreen extends MusicBeatState {
 		switch (stateToGo)
 		{
 			case 'playButton':
-				MusicBeatState.switchState(new LevelChooser());
+				MusicBeatState.switchState(new PlayerChooser());
             case 'exitGame':
 				Sys.exit(0);
 		}		

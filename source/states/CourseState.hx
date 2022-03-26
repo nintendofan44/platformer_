@@ -1,5 +1,6 @@
 package states;
 
+import base.Conductor;
 import helpers.Highscore;
 import flixel.text.FlxText;
 import shaders.ShaderEffect;
@@ -22,6 +23,8 @@ import helpers.AssetPaths;
 import flixel.addons.editors.tiled.TiledMap;
 import openfl.filters.ShaderFilter;
 import openfl.filters.BitmapFilter;
+
+using StringTools;
 
 class CourseState extends MusicBeatState {
 	public static var instance:CourseState;
@@ -64,7 +67,7 @@ class CourseState extends MusicBeatState {
 
 	public var inSub:Bool = false;
 
-    function createCourse(levelName:String, playerSpawn:{x:Float, y:Float}, world:String) {
+    function createCourse(levelName:String, playerSpawn:{x:Float, y:Float}, world:String, playerNum:Int) {
         final map = new TiledMap(AssetPaths.tmx('$levelName', 'levels'));
 
 		mainCam = new FlxCamera();
@@ -96,7 +99,9 @@ class CourseState extends MusicBeatState {
 		generateCoins(map);
 		generateTrophys(map);
 
-		player = new Player(playerSpawn.x, playerSpawn.y, FlxG.random.int(1, 3));
+		//FlxG.random.int(1, 4)
+
+		player = new Player(playerSpawn.x, playerSpawn.y, playerNum, false);
 		add(player);
 
 		levelBounds = FlxCollision.createCameraWall(FlxG.camera, true, 1);
@@ -256,7 +261,16 @@ class CourseState extends MusicBeatState {
 	}
 
 	override public function update(elapsed:Float) {
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
+
 		super.update(elapsed);
+
+		if ((player.skin != 1 || player.skin != 2 || player.skin != 3)
+			&& player.holdTimer > Conductor.stepCrochet * 0.001 * 4
+			&& player.animation.curAnim.name.startsWith('walk')) {
+			player.dance();
+		}
 
 		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, Utilities.bound(1 - (elapsed * 3.125), 0, 1));
 		//hudCam.zoom = FlxMath.lerp(defaulthudCamZoom, hudCam.zoom, Utilities.bound(1 - (elapsed * 3.125), 0, 1));
@@ -292,6 +306,16 @@ class CourseState extends MusicBeatState {
 		if (FlxG.camera.zoom < maxCamZoomLimit && curBeat % 1 == 0) {
 			FlxG.camera.zoom += camZoom;
 			//hudCam.zoom += hudCamZoom;
+		}
+
+		if (curBeat % player.beatPercent == 0
+			&& (player.skin != 1 || player.skin != 2 || player.skin != 3)
+			&& player.animation.curAnim != null
+			&& !player.animation.curAnim.name.startsWith('walk')) {
+			switch (player.skin) {
+				default:
+					player.dance();
+			}
 		}
 
 		lastBeatHit = curBeat;

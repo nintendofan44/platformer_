@@ -27,18 +27,21 @@ class PlayState extends CourseState {
 	var level:String = "";
 	var world:String = "";
 
+	var playerNum:Int = 0;
+
 	private function get_close():Bool {
 		return FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]);
 	}
 
-	public function new(level:String, world:String) {
+	public function new(level:String, world:String, playerNum:Int) {
 		super();
 		this.level = level;
 		this.world = world;
+		this.playerNum = playerNum;
 	}
 
 	override public function create() {
-		createCourse(level, {x: 16, y: 672}, world);
+		createCourse(level, {x: 16, y: 672}, world, playerNum);
 
 		score = new FlxText(18, 15, FlxG.width, scoreString + 0, 24);
 		score.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);

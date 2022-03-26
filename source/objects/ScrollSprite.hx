@@ -13,7 +13,7 @@ import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
 
-class LevelIcon extends FlxSprite {
+class ScrollSprite extends FlxSprite {
 	public var forceX:Float = Math.NEGATIVE_INFINITY;
 	public var targetY:Float = 0;
 	public var targetX:Float = 0;
@@ -78,7 +78,7 @@ class LevelIcon extends FlxSprite {
 	}
 
 	// huh
-	override public function loadGraphic(Graphic:FlxGraphicAsset, Animated:Bool = false, Width:Int = 0, Height:Int = 0, Unique:Bool = false, ?Key:String):LevelIcon
+	override public function loadGraphic(Graphic:FlxGraphicAsset, Animated:Bool = false, Width:Int = 0, Height:Int = 0, Unique:Bool = false, ?Key:String):ScrollSprite
 	{
 		var graph:FlxGraphic = FlxG.bitmap.add(Graphic, Unique, Key);
 		if (graph == null)

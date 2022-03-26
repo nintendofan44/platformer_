@@ -1,6 +1,8 @@
 package states;
 
+import helpers.states.AnimationDebug;
 import base.Conductor;
+import objects.Player;
 import helpers.Highscore;
 import flixel.text.FlxText.FlxTextBorderStyle;
 import objects.ConnectedFlxText;
@@ -11,32 +13,37 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;
 import objects.ScrollSprite;
 
-class LevelChooser extends MusicBeatState {
-	var menuItems:FlxTypedGroup<ScrollSprite>;
-	private var arrayArray:Array<ConnectedFlxText> = [];
+using StringTools;
 
-	var pnToStore:Int = 0;
+class PlayerChooser extends MusicBeatState {
+	var menuItems:FlxTypedGroup<Player>;
+	private var arrayArray:Array<ConnectedFlxText> = [];
 
 	public static var curSelected:Int = 0;
 
-	var scoreTxt:ConnectedFlxText;
+	var charTxt:ConnectedFlxText;
 
-	// 1 - level name / 2 - world name
-	var levels:Array<Dynamic> = [
-		["level1", "one"],
-		["level2", "one"],
-		["level3", "one"],
-		["level4", "one"],
-		["level5", "one"]
+	// 1 - char name / 2 - age????
+	var chars:Array<Dynamic> = [
+		["1", "old"],
+		["2", "old"],
+		["3", "old"],
+		["4", "new"],
+		["5", "new"]
 	];
 
 	var close(get, null):Bool;
+	var seven(get, null):Bool;
 	var enter(get, null):Bool;
 	var left(get, null):Bool;
 	var right(get, null):Bool;
 
 	private function get_close():Bool {
 		return FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]);
+	}
+
+	private function get_seven():Bool {
+		return FlxG.keys.anyJustPressed([SEVEN]);
 	}
 
 	private function get_enter():Bool {
@@ -51,9 +58,8 @@ class LevelChooser extends MusicBeatState {
 		return FlxG.keys.anyJustPressed([RIGHT, D]);
 	}
 
-	public function new(pnToStore:Int) {
+	public function new() {
 		super();
-		this.pnToStore = pnToStore;
 	}
 
 	override public function create() {
@@ -63,27 +69,27 @@ class LevelChooser extends MusicBeatState {
 		bg.screenCenter();
 		add(bg);
 
-		menuItems = new FlxTypedGroup<ScrollSprite>();
+		menuItems = new FlxTypedGroup<Player>();
 		add(menuItems);
 
-		for (i in 0...levels.length) {
-			var icon:ScrollSprite = new ScrollSprite().loadGraphic(AssetPaths.levelIcon(levels[i][0], 'levels'));
-			icon.ID = i;
-			icon.scrollType = "Horizontal";
-			menuItems.add(icon);
+		for (i in 0...chars.length) {
+			var char:Player = new Player(0, 0, Std.parseInt(chars[i][0]), true);
+			char.ID = i;
+			char.scrollType = "Horizontal";
+			menuItems.add(char);
 
-			scoreTxt = new ConnectedFlxText(0, 0, FlxG.width, 'Score: ' + Highscore.getScore(levels[i][0]), 20);
-			scoreTxt.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			scoreTxt.sprTracker = icon;
-			scoreTxt.xAdd = -550;
-			scoreTxt.yAdd = 150;
-			add(scoreTxt);
-			arrayArray.push(scoreTxt);
+			charTxt = new ConnectedFlxText(0, 0, FlxG.width, '' + chars[i][0], 20);
+			charTxt.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			charTxt.sprTracker = char;
+			charTxt.xAdd = -650;
+			charTxt.yAdd = char.height + 20;
+			add(charTxt);
+			arrayArray.push(charTxt);
 		}
 
-		/*var middle:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.image('ui/thingy'));
+		var middle:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.image('ui/thingy'));
 		middle.screenCenter();
-		add(middle);*/
+		add(middle);
 
 		changeSelection();
 	}
@@ -101,15 +107,23 @@ class LevelChooser extends MusicBeatState {
 		}
 
 		if (enter) {
-			for (i in 0...levels.length) {
+			for (i in 0...chars.length) {
 				if (i == curSelected) {
-					MusicBeatState.switchState(new PlayState(levels[i][0], levels[i][1], pnToStore));
+					MusicBeatState.switchState(new LevelChooser(Std.parseInt(chars[i][0])));
 				}
 			}
 		}
 
 		if (close)
 			MusicBeatState.switchState(new TitleScreen());
+
+		if (seven) {
+			for (i in 0...chars.length) {
+				if ((curSelected != 0 || curSelected != 1 || curSelected != 2) && i == curSelected) {
+					MusicBeatState.switchState(new AnimationDebug(Std.parseInt(chars[i][0])));
+				}
+			}
+		}
 
 		super.update(elapsed);
 	}
@@ -121,6 +135,17 @@ class LevelChooser extends MusicBeatState {
 
 		if (lastBeatHit == curBeat) {
 			return;
+		}
+
+		for (item in menuItems.members) {
+			if (curBeat % item.beatPercent == 0
+				&& (item.skin != 1 || item.skin != 2 || item.skin != 3)
+				&& item.animation.curAnim != null) {
+				switch (item.skin) {
+					default:
+						item.dance();
+				}
+			}
 		}
 
 		lastBeatHit = curBeat;

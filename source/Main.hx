@@ -1,5 +1,12 @@
 package;
 
+import openfl.system.System;
+import flixel.system.FlxAssets;
+import openfl.text.TextFormat;
+import openfl.text.TextFieldAutoSize;
+import openfl.text.TextField;
+import flixel.util.FlxColor;
+import counters.FPS_Mem2;
 import flixel.FlxG;
 import states.PlayState;
 import states.TitleScreen;
@@ -11,18 +18,41 @@ import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import openfl.display.Bitmap;
+import openfl.Assets;
 
-class Main extends Sprite
+class FlxGameMod extends FlxGame
 {
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var initialState:Class<FlxState> = PlayState; // The FlxState the game starts with.
+	var initialState:Class<FlxState> = TitleScreen; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-	var framerate:Int = 60; // How many frames per second the game should run at.
+	public static var framerate:Int = 60; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
-	var counter:FPS_Mem;
 
+	public function new() {
+		var stageWidth:Float = Lib.application.window.width;
+		var stageHeight:Float = Lib.application.window.height;
+
+		if (zoom == -1) {
+			var ratioX:Float = stageWidth / gameWidth;
+			var ratioY:Float = stageHeight / gameHeight;
+			zoom = Math.min(ratioX, ratioY);
+			gameWidth = Math.ceil(stageWidth / zoom);
+			gameHeight = Math.ceil(stageHeight / zoom);
+		}
+
+		#if !debug
+		initialState = TitleScreen;
+		#end
+
+		super(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
+	}
+}
+
+class Main extends Sprite {
+	var counter:FPS_Mem2;
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function main():Void
@@ -54,28 +84,12 @@ class Main extends Sprite
 		setupGame();
 	}
 
-	private function setupGame():Void
-	{
-		var stageWidth:Int = Lib.current.stage.stageWidth;
-		var stageHeight:Int = Lib.current.stage.stageHeight;
+	private function setupGame():Void {
 
-		if (zoom == -1)
-		{
-			var ratioX:Float = stageWidth / gameWidth;
-			var ratioY:Float = stageHeight / gameHeight;
-			zoom = Math.min(ratioX, ratioY);
-			gameWidth = Math.ceil(stageWidth / zoom);
-			gameHeight = Math.ceil(stageHeight / zoom);
-		}
-
-		#if !debug
-		initialState = TitleScreen;
-		#end
-
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		addChild(new FlxGameMod());
 
 		#if !mobile
-		counter = new FPS_Mem(10, 3, 0xFFFFFF);
+		counter = new FPS_Mem2(10, 3, 0xFFFFFF);
 		addChild(counter);
 		#end
 

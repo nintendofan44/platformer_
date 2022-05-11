@@ -32,37 +32,14 @@ class PlayerChooser extends MusicBeatState {
 		["5", "new"]
 	];
 
-	var close(get, null):Bool;
-	var seven(get, null):Bool;
-	var enter(get, null):Bool;
-	var left(get, null):Bool;
-	var right(get, null):Bool;
-
-	private function get_close():Bool {
-		return FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]);
-	}
-
-	private function get_seven():Bool {
-		return FlxG.keys.anyJustPressed([SEVEN]);
-	}
-
-	private function get_enter():Bool {
-		return FlxG.keys.anyJustPressed([ENTER]);
-	}
-
-    private function get_left():Bool {
-		return FlxG.keys.anyJustPressed([LEFT, A]);
-	}
-
-    private function get_right():Bool {
-		return FlxG.keys.anyJustPressed([RIGHT, D]);
-	}
-
 	public function new() {
 		super();
 	}
 
 	override public function create() {
+		AssetPaths.clearStoredMemory();
+		AssetPaths.clearUnusedMemory();
+
 		super.create();
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.GRAY);
@@ -87,9 +64,9 @@ class PlayerChooser extends MusicBeatState {
 			arrayArray.push(charTxt);
 		}
 
-		var middle:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.image('ui/thingy'));
+		/*var middle:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.image('ui/thingy'));
 		middle.screenCenter();
-		add(middle);
+		add(middle);*/
 
 		changeSelection();
 	}
@@ -98,15 +75,15 @@ class PlayerChooser extends MusicBeatState {
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
-		if (left) {
+		if (controls.UI_LEFT_P) {
 			changeSelection(-1);
 		}
 
-		if (right) {
+		if (controls.UI_RIGHT_P) {
 			changeSelection(1);
 		}
 
-		if (enter) {
+		if (controls.ACCEPT) {
 			for (i in 0...chars.length) {
 				if (i == curSelected) {
 					MusicBeatState.switchState(new LevelChooser(Std.parseInt(chars[i][0])));
@@ -114,10 +91,10 @@ class PlayerChooser extends MusicBeatState {
 			}
 		}
 
-		if (close)
+		if (controls.BACK)
 			MusicBeatState.switchState(new TitleScreen());
 
-		if (seven) {
+		if (FlxG.keys.justPressed.SEVEN) {
 			for (i in 0...chars.length) {
 				if ((curSelected != 0 || curSelected != 1 || curSelected != 2) && i == curSelected) {
 					MusicBeatState.switchState(new AnimationDebug(Std.parseInt(chars[i][0])));

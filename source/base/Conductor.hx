@@ -21,8 +21,33 @@ class Conductor {
 	public function new() {
 	}
 
+	public static function getBPMChange(time:Float) {
+		var lastChange:BPMChangeEvent = {
+			stepTime: 0,
+			songTime: 0,
+			bpm: bpm
+		}
+		for (i in 0...Conductor.bpmChangeMap.length) {
+			if (time >= Conductor.bpmChangeMap[i].songTime)
+				lastChange = Conductor.bpmChangeMap[i];
+		}
+
+		return lastChange;
+	}
+
+	public static function getCrochet(time:Float) {
+		var lastChange = getBPMChange(time);
+		return ((60 / lastChange.bpm) * 1000);
+	}
+
 	public static function mapBPMChanges(song:MusicData) {
-		bpmChangeMap = [];
+		bpmChangeMap = [
+			{
+				stepTime: 0,
+				songTime: 0,
+				bpm: song.bpm
+			}
+		];
 
 		var curBPM:Float = song.bpm;
 		var totalSteps:Int = 0;

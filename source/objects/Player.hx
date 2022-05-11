@@ -1,15 +1,22 @@
 package objects;
 
+import base.PlayerSettings;
+import base.Controls;
 import helpers.Utilities;
 import flixel.math.FlxMath;
 import base.Conductor;
 import helpers.AssetPaths;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import base.GameSettings;
 
 using StringTools;
 
 class Player extends FlxSprite {
+	private var controls(get, never):Controls;
+	inline function get_controls():Controls
+		return PlayerSettings.player1.controls;
+
 	public var forceX:Float = Math.NEGATIVE_INFINITY;
 	public var targetY:Float = 0;
 	public var targetX:Float = 0;
@@ -28,10 +35,11 @@ class Player extends FlxSprite {
 	public var jumpTimer:Float = 0;
 	public var isJumping:Bool = false;
 	public var scrolls:Bool;
+	public var inOptions:Bool;
 
 	public var animOffsets:Map<String, Array<Dynamic>>;
 
-    var left(get, null):Bool;
+	var left(get, null):Bool;
 	var right(get, null):Bool;
 	var jump(get, null):Bool;
 
@@ -41,28 +49,25 @@ class Player extends FlxSprite {
 
 	public var skin:Int;
 
-    private function get_left():Bool {
-		return FlxG.keys.anyPressed([LEFT, A]);
+	private function get_left():Bool {
+		return controls.LEFT;
 	}
 
     private function get_right():Bool {
-		return FlxG.keys.anyPressed([RIGHT, D]);
+		return controls.RIGHT;
 	}
 
     private function get_jump():Bool {
-		return FlxG.keys.anyPressed([UP, SPACE, W]);
+		return controls.JUMP;
 	}
 
-	public function new(xx:Float, yy:Float, skin:Int, scrolls:Bool) {
+	public function new(xx:Float, yy:Float, skin:Int, scrolls:Bool, inOptions:Bool = false) {
 		super(xx, yy);
 
-		#if (haxe >= "4.0.0")
 		animOffsets = new Map();
-		#else
-		animOffsets = new Map<String, Array<Dynamic>>();
-		#end
 
 		this.scrolls = scrolls;
+		this.inOptions = inOptions;
 		this.skin = skin;
         loadSkin(skin);
 
@@ -143,7 +148,7 @@ class Player extends FlxSprite {
 		super.update(elapsed);
 
 		if (!scrolls)
-			movementMechanic();
+			movementMechanic(elapsed);
 	}
 
     function jumpMechanic(?elapsed:Float) {
@@ -165,7 +170,7 @@ class Player extends FlxSprite {
     }
 
     function movementMechanic(?elapsed:Float) {
-        if (left) {
+		if (left) {
 			acceleration.x = -ACCELERATION_X;
 			playAnim('walk');
 		}
@@ -248,6 +253,10 @@ class Player extends FlxSprite {
 				animation.addByPrefix('right', 'right', 24);
 				animation.addByPrefix('walk', 'walk', 24);
 
+				var scaleNum:Float = 2.2;
+				scale.set(scaleNum, scaleNum);
+				updateHitbox();
+
 				addOffset('left', 0, 0);
 				addOffset('right', 0, 0);
 				addOffset('walk', 0, 0);
@@ -257,9 +266,11 @@ class Player extends FlxSprite {
 				animation.addByPrefix('right', 'right', 24);
 				animation.addByPrefix('walk', 'walk', 24);
 				
-				var scaleNum:Float = 0.6;
-				scale.set(scaleNum, scaleNum);
-				updateHitbox();
+				if (!inOptions) {
+					var scaleNum:Float = 0.6;
+					scale.set(scaleNum, scaleNum);
+					updateHitbox();
+				}
 
 				addOffset('left', 0, 0);
 				addOffset('right', -4, 0);
@@ -272,7 +283,7 @@ class Player extends FlxSprite {
 			maxVelocity.y = MAX_SPEED_Y;
 			maxVelocity.x = MAX_SPEED_X;
 			drag.x = DRAG_X;
-			antialiasing = true;
+			antialiasing = GameSettings.antialias;
 		}
     }
 

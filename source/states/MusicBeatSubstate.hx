@@ -1,10 +1,12 @@
 package states;
 
+import base.PlayerSettings;
 import base.Conductor;
 import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
+import base.Controls;
 
 class MusicBeatSubstate extends FlxSubState
 {
@@ -18,6 +20,11 @@ class MusicBeatSubstate extends FlxSubState
 
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
+
+	private var controls(get, never):Controls;
+
+	inline function get_controls():Controls
+		return PlayerSettings.player1.controls;
 
 	override function update(elapsed:Float)
 	{

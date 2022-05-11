@@ -1,5 +1,11 @@
 package states;
 
+import options.OptionsState;
+import base.PlayerSettings;
+import lime.tools.WindowData;
+import lime.ui.WindowAttributes;
+import openfl.display.Application;
+import lime.ui.Window as LimeWindow;
 import helpers.Highscore;
 import states.LevelChooser;
 import flixel.FlxObject;
@@ -17,6 +23,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import base.Conductor;
+import base.GameSettings;
 
 class TitleScreen extends MusicBeatState {
 	var sound:FlxSoundAsset;
@@ -36,7 +43,7 @@ class TitleScreen extends MusicBeatState {
 
     // arrays and such
     private var titleArray:Array<FlxText> = [];
-    private var buttonArray:Array<String> = ['playButton', 'exitGame'];
+    private var buttonArray:Array<String> = ['playButton', 'options', 'exitGame', 'waveform test'];
     private var anotherButtonArray:Array<FlxSprite> = [];
 
     // camera stuff
@@ -45,7 +52,10 @@ class TitleScreen extends MusicBeatState {
 
 	override public function create()
 	{
-        Highscore.load();
+        AssetPaths.clearStoredMemory();
+		AssetPaths.clearUnusedMemory();
+
+        PlayerSettings.init();
 
         if (buttonArray.length > 2)
             enableCamScroll = true;
@@ -88,14 +98,14 @@ class TitleScreen extends MusicBeatState {
 			button.animation.addByPrefix('idle', buttonArray[i] + 'Idle', 24, true);
 			button.animation.addByPrefix('hover', buttonArray[i] + 'Hover', 24, true);
 			button.animation.play('idle');
-			button.antialiasing = true;
+			button.antialiasing = GameSettings.antialias;
 			button.updateHitbox();
 			button.screenCenter(X);
             add(button);
             var scr:Float = buttonArray.length * 0.135;
 			if (buttonArray.length < 1) scr = 0;
 			button.scrollFactor.set(0, scr);
-            button.antialiasing = true;
+            button.antialiasing = GameSettings.antialias;
             anotherButtonArray.push(button);
             if (enableCamScroll) {
                 FlxTween.tween(button, {y: (titleOuterShadow.height + 120) + (i * 200)}, 1 + (i * 0.25), {
@@ -134,6 +144,10 @@ class TitleScreen extends MusicBeatState {
         changeItem();
 
 		super.create();
+
+        FlxG.save.bind('platformer', 'nintendofan44');
+		GameSettings.loadPrefs();
+		Highscore.load();
 	}
 
     var canClick:Bool = true;
@@ -258,8 +272,12 @@ class TitleScreen extends MusicBeatState {
 		{
 			case 'playButton':
 				MusicBeatState.switchState(new PlayerChooser());
+			case 'options':
+				MusicBeatState.switchState(new OptionsState());
             case 'exitGame':
 				Sys.exit(0);
+			case 'waveform test':
+				MusicBeatState.switchState(new WFteststate(AssetPaths.musicString('menu')));
 		}		
 	}
 

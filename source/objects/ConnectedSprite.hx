@@ -1,5 +1,6 @@
 package objects;
 
+import base.GameSettings;
 import helpers.AssetPaths;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
@@ -30,7 +31,7 @@ class ConnectedSprite extends FlxSprite {
 		else if (file != null) {
 			loadGraphic(AssetPaths.image(file, library));
 		}
-		antialiasing = true;
+		antialiasing = GameSettings.antialias;
 		scrollFactor.set();
 	}
 

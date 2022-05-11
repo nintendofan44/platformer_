@@ -4,8 +4,6 @@ import base.Conductor;
 import helpers.Highscore;
 import flixel.text.FlxText;
 import shaders.ShaderEffect;
-import shaders.Light;
-import shaders.Shadow;
 import helpers.Utilities;
 import flixel.math.FlxMath;
 import flixel.FlxCamera;
@@ -57,8 +55,6 @@ class CourseState extends MusicBeatState {
 
 	var hudShaders:Array<ShaderEffect> = [];
 	var mainShaders:Array<ShaderEffect> = [];
-	var light:Light;
-	var shadow:Shadow;
 	var bg:FlxSprite = new FlxSprite();
 
 	public var score:FlxText;
@@ -67,7 +63,7 @@ class CourseState extends MusicBeatState {
 
 	public var inSub:Bool = false;
 
-    function createCourse(levelName:String, playerSpawn:{x:Float, y:Float}, world:String, playerNum:Int) {
+    function createCourse(levelName:String, playerSpawn:{x:Float, y:Float}, world:Int, playerNum:Int) {
         final map = new TiledMap(AssetPaths.tmx('$levelName', 'levels'));
 
 		mainCam = new FlxCamera();

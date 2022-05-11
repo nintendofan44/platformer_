@@ -10,6 +10,17 @@ using StringTools;
 
 class Utilities
 {
+	inline public static function textArray(path:String):Array<String>
+	{
+		var daList:Array<String> = Assets.getText(path).trim().split('\n');
+		for (i in 0...daList.length)
+		{
+			daList[i] = daList[i].trim();
+		}
+
+		return daList;
+	}
+
 	inline public static function nextPower(k:Int) { // not sure what this is for
 		var n = 1;
 		while (n < k)
@@ -31,13 +42,25 @@ class Utilities
 		return if (f2 == 0) 0 else f1 / f2;
 	}
 
-	public static function precacheSound(sound:String, ?library:String = null):Void
-	{
-		if (!Assets.cache.hasSound(AssetPaths.sound(sound, library)))
-		{
-			FlxG.sound.cache(AssetPaths.sound(sound, library));
-		}
+	public static function precacheSound(sound:String, ?library:String = null):Void {
+		precacheSoundFile(AssetPaths.sound(sound, library));
 	}
+
+	public static function precacheMusic(sound:String, ?library:String = null):Void {
+		precacheSoundFile(AssetPaths.music(sound, library));
+	}
+
+	private static function precacheSoundFile(file:Dynamic):Void {
+		if (Assets.exists(file, SOUND) || Assets.exists(file, MUSIC))
+			Assets.getSound(file, true);
+	}
+
+	inline public static function verifyChar(array:Array<Dynamic>, texto:String) {
+        for (i in 0...array.length) {
+            if (texto.contains(array[i][0]))
+                texto = texto.replace(array[i][0], array[i][1]);
+        }
+    }
 
 	public static function browserLoad(site:String)
 	{

@@ -1,5 +1,6 @@
 package;
 
+import base.GameSettings;
 import openfl.system.System;
 import flixel.system.FlxAssets;
 import openfl.text.TextFormat;
@@ -85,7 +86,7 @@ class Main extends Sprite {
 	}
 
 	private function setupGame():Void {
-
+		GameSettings.loadDefaultKeys();
 		addChild(new FlxGameMod());
 
 		#if !mobile

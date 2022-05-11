@@ -1,5 +1,6 @@
 package helpers.states;
 
+import states.TitleScreen;
 import away3d.entities.Sprite3D; // hmm
 import states.MusicBeatState;
 import objects.Player;
@@ -39,7 +40,7 @@ class AnimationDebug extends MusicBeatState
 		gridBG.scrollFactor.set(0.5, 0.5);
 		add(gridBG);
 
-        char = new Player(0, 0, daAnim, true);
+        char = new Player(0, 0, daAnim, true, false);
 		add(char);
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
@@ -168,6 +169,9 @@ class AnimationDebug extends MusicBeatState
 			genBoyOffsets(false);
 			char.playAnim(animList[curAnim]);
 		}
+
+		if (controls.BACK)
+			MusicBeatState.switchState(new TitleScreen());
 
 		super.update(elapsed);
 	}

@@ -1,5 +1,7 @@
 package states;
 
+import base.GameSettings;
+import states.LevelChooser.WorldData;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import helpers.Highscore;
@@ -20,27 +22,26 @@ import states.CourseState;
 import flixel.util.FlxCollision;
 
 class PlayState extends CourseState {
-	var close(get, null):Bool;
-
 	var sound:FlxSoundAsset;
 
 	var level:String = "";
-	var world:String = "";
+	var world:Int = 1;
 
 	var playerNum:Int = 0;
 
-	private function get_close():Bool {
-		return FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]);
-	}
-
-	public function new(level:String, world:String, playerNum:Int) {
+	public function new(level:String, world:Int, playerNum:Int) {
 		super();
 		this.level = level;
-		this.world = world;
+
+		if (world < 0 && world != 0)
+			this.world = world;
+
 		this.playerNum = playerNum;
 	}
 
 	override public function create() {
+		AssetPaths.clearStoredMemory();
+
 		createCourse(level, {x: 16, y: 672}, world, playerNum);
 
 		score = new FlxText(18, 15, FlxG.width, scoreString + 0, 24);
@@ -50,15 +51,20 @@ class PlayState extends CourseState {
 		add(score);
 
 		super.create();
+
+		AssetPaths.clearUnusedMemory();
 	}
 
 	override public function update(elapsed:Float) {
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
+		if (controls.RESET && GameSettings.disableReset)
+			MusicBeatState.switchState(new PlayState(level, world, playerNum)); // bad but whateva, it works
+
 		super.update(elapsed);
 
-		if (close)
+		if (controls.BACK)
 			MusicBeatState.switchState(new TitleScreen());
 
 		for (coin in coinGroup.members) {
@@ -111,23 +117,24 @@ class PlayState extends CourseState {
 
 class ScoreSubstate extends MusicBeatSubstate {
 	var score:FlxText;
+	var lerpScore:Int = 0;
+	var intendedScore:Int = 0;
+	var stringThing:String = "";
+
 	var bg:FlxSprite = new FlxSprite();
-
-	var closeThis(get, null):Bool;
-
-	private function get_closeThis():Bool {
-		return FlxG.keys.anyJustPressed([ENTER]);
-	}
 
 	public function new(stringThing:String, scoreNum:Int) {
 		super();
+
+		this.stringThing = stringThing;
+		this.intendedScore = scoreNum;
 
 		bg.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.screenCenter();
 		bg.alpha = 0.6;
 		add(bg);
 
-		score = new FlxText(0, 0, FlxG.width, stringThing + scoreNum, 24);
+		score = new FlxText(0, 0, FlxG.width, "", 24);
 		score.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		score.scrollFactor.set();
 		score.borderSize = 1.25;
@@ -136,9 +143,13 @@ class ScoreSubstate extends MusicBeatSubstate {
 	}
 
 	override public function update(elapsed:Float) {
+		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, Utilities.bound(elapsed, 0, 1)));
+
+		score.text = '' + stringThing + lerpScore;
+
 		super.update(elapsed);
 
-		if (closeThis) {
+		if (controls.BACK) {
 			FlxG.switchState(new TitleScreen());
 			FlxTransitionableState.skipNextTransIn = true;
 			FlxTransitionableState.skipNextTransOut = true;

@@ -1,5 +1,6 @@
 package states;
 
+import base.PlayerSettings;
 import base.Conductor;
 import flixel.FlxG;
 import flixel.addons.ui.FlxUIState;
@@ -14,6 +15,7 @@ import flixel.util.FlxGradient;
 import flixel.FlxState;
 import flixel.FlxBasic;
 import ui.CustomFadeTransition;
+import base.Controls;
 
 class MusicBeatState extends FlxUIState
 {
@@ -22,6 +24,11 @@ class MusicBeatState extends FlxUIState
 
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
+
+	private var controls(get, never):Controls;
+
+	inline function get_controls():Controls
+		return PlayerSettings.player1.controls;
 
 	override function create() {
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;

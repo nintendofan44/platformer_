@@ -1,5 +1,10 @@
 package states;
 
+import flixel.util.FlxTimer;
+import flixel.util.FlxStringUtil;
+import flixel.text.FlxText;
+import ui.CustomFadeTransition;
+import flixel.FlxCamera;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.ui.FlxBar;
@@ -21,6 +26,7 @@ import lime.media.vorbis.VorbisFile;
 import openfl.geom.Rectangle;
 import openfl.media.Sound;
 import sys.thread.Thread;
+import flixel.math.FlxPoint;
 
 class WFteststate extends MusicBeatState {
 	var ww:Int = 534;
@@ -29,10 +35,23 @@ class WFteststate extends MusicBeatState {
 	var playbackLoudness:Float = 0;
 
 	var music:String = "";
+
+	var audioManagerBg:FlxSprite;
 	var waveformSprite:FlxSprite;
+	var disc:FlxSprite;
 
 	var audioBuffer:AudioBuffer;
 	var bytes:Bytes;
+
+	public var hudCamera:FlxCamera;
+	public var mainCamera:FlxCamera;
+	public var transitionCamera:FlxCamera;
+
+	private var updateTime:Bool = false;
+	var songLength:Float = 0;
+	var songPercent:Float = 0;
+
+	var timeLeft:FlxText;
 
 	public function new(music:String) {
 		super();
@@ -45,28 +64,103 @@ class WFteststate extends MusicBeatState {
 
 		bgColor = FlxColor.GRAY;
 
-		super.create();
+		// Cameras
+		mainCamera = new FlxCamera();
+		hudCamera = new FlxCamera();
+		transitionCamera = new FlxCamera();
+		hudCamera.bgColor.alpha = 0;
+		transitionCamera.bgColor.alpha = 0;
 
-		waveformSprite = new FlxSprite().makeGraphic(ww, hh, FlxColor.BLACK);
-		waveformSprite.screenCenter();
+		FlxG.cameras.reset(mainCamera);
+		FlxG.cameras.add(hudCamera);
+		FlxG.cameras.add(transitionCamera);
+
+		FlxCamera.defaultCameras = [mainCamera];
+		CustomFadeTransition.nextCamera = transitionCamera;
+
+		var toAdd:Int = 100;
+		audioManagerBg = new FlxSprite(0, 0);
+		makeSpriteGraphic(audioManagerBg, ww + toAdd, hh + toAdd, FlxColor.BLACK);
+		audioManagerBg.cameras = [hudCamera];
+		audioManagerBg.scrollFactor.set();
+		audioManagerBg.screenCenter();
+		audioManagerBg.y += 100;
+		audioManagerBg.alpha = 0;
+		add(audioManagerBg);
+
+		var tex = AssetPaths.getSparrowAtlas('cd', 'shared');
+		disc = new FlxSprite(904, 314);
+		disc.cameras = [hudCamera];
+		disc.frames = tex;
+		disc.animation.addByPrefix("cd", "cd", 24);
+		disc.animation.play("cd");
+		disc.scale.x = 0;
+		disc.alpha = 0;
+		add(disc);
+
+		waveformSprite = new FlxSprite(350, 271).makeGraphic(ww, hh, FlxColor.BLACK);
+		waveformSprite.cameras = [hudCamera];
+		waveformSprite.alpha = 0;
 		add(waveformSprite);
 
+		timeLeft = new FlxText(0, 0, FlxG.width, "", 45);
+		timeLeft.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), 45, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		timeLeft.cameras = [hudCamera];
+		timeLeft.scrollFactor.set();
+		timeLeft.screenCenter();
+		timeLeft.alpha = 0;
+		add(timeLeft);
+
+		super.create();
+
 		audioBuffer = AudioBuffer.fromFile(music);
-
 		bytes = audioBuffer.data.toBytes();
-
 		FlxG.sound.playMusic(Sound.fromAudioBuffer(audioBuffer));
+		updateTime = true;
+		songLength = FlxG.sound.music.length;
+
+		FlxTween.tween(disc, {alpha: 1, 'scale.x': 1}, 0.5, {ease: FlxEase.expoInOut});
+		FlxTween.tween(audioManagerBg, {alpha: 1}, 0.3, {ease: FlxEase.expoInOut});
+		FlxTween.tween(waveformSprite, {alpha: 1}, 0.3, {ease: FlxEase.expoInOut});
+		FlxTween.tween(timeLeft, {alpha: 1}, 0.3, {ease: FlxEase.expoInOut});
 	}
 
 	override public function update(elapsed:Float) {
 		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
+
+		debugControls(disc);
+
 		if (controls.BACK) {
-			bgColor = FlxColor.BLACK;
-			MusicBeatState.switchState(new TitleScreen());
-			FlxG.sound.music.stop();
+			FlxTween.tween(disc, {alpha: 0, 'scale.x': 0}, 0.3, {ease: FlxEase.expoInOut});
+			FlxTween.tween(audioManagerBg, {alpha: 0}, 0.3, {ease: FlxEase.expoInOut});
+			FlxTween.tween(waveformSprite, {alpha: 0}, 0.3, {ease: FlxEase.expoInOut});
+			FlxTween.tween(timeLeft, {alpha: 0}, 0.3, {ease: FlxEase.expoInOut});
+			new FlxTimer().start(0.4, function(tmr:FlxTimer) {
+				MusicBeatState.switchState(new TitleScreen());
+				updateTime = false;
+				FlxG.sound.music.stop();
+				FlxG.sound.music = null;
+				bgColor = FlxColor.BLACK;
+			});
 		}
 
 		super.update(elapsed);
+
+		disc.angle += 0.6 / Utilities.bound(elapsed * 9.6, 0, 1);
+
+		if (updateTime) {
+			var curTime:Float = Conductor.songPosition;
+			if(curTime < 0) curTime = 0;
+			songPercent = (curTime / songLength);
+
+			var songCalc:Float = (songLength - curTime);
+			//songCalc = curTime;
+
+			var secondsTotal:Int = Math.floor(songCalc / 1000);
+			if(secondsTotal < 0) secondsTotal = 0;
+
+			timeLeft.text = FlxStringUtil.formatTime(secondsTotal, false);
+		}
 
 		updateWaveform();
 	}
@@ -110,10 +204,11 @@ class WFteststate extends MusicBeatState {
 
 			if ((index % samplesPerRow) == 0) {
 				var mult:Float = 8;
-				//if (drawIndex == hh) freqHit(x, y, width, height);
+				// if (drawIndex == hh) freqHit(x, y, width, height);
 				var pixelsMin:Float = Math.abs(min * (size * mult));
 				var pixelsMax:Float = max * (size * mult);
-				waveformSprite.pixels.fillRect(new Rectangle(drawIndex, Std.int((size * (mult / 2))) - pixelsMin, 1, pixelsMin + pixelsMax), FlxColor.WHITE); // waveform lookin good
+				var rect:Rectangle = new Rectangle(drawIndex, Std.int((size * (mult / 2))) - pixelsMin, 1, pixelsMin + pixelsMax);
+				waveformSprite.pixels.fillRect(rect, FlxColor.WHITE); // waveform lookin good
 				drawIndex++;
 
 				min = 0;
@@ -128,5 +223,64 @@ class WFteststate extends MusicBeatState {
 
 	public function freqHit(x:Float, y:Float, min:Float, max:Float) {
 		playbackLoudness = min * 0.001 + max * 0.001;
+	}
+
+	function debugControls(sprite:FlxSprite) {
+		var holdShift = FlxG.keys.pressed.SHIFT;
+		var multiplier = 1;
+		if (holdShift)
+			multiplier = 10;
+
+		if (sprite != null && sprite.exists) {
+			if (FlxG.keys.pressed.LEFT) {
+				sprite.x -= 1 * multiplier;
+				trace('x: ' + sprite.x);
+			}
+			if (FlxG.keys.pressed.RIGHT) {
+				sprite.x += 1 * multiplier;
+				trace('x: ' + sprite.x);
+			}
+			if (FlxG.keys.pressed.UP) {
+				sprite.y -= 1 * multiplier;
+				trace('y: ' + sprite.y);
+			}
+			if (FlxG.keys.pressed.DOWN) {
+				sprite.y += 1 * multiplier;
+				trace('y: ' + sprite.y);
+			}
+		}
+	}
+
+	var cornerSize:Int = 10;
+	function makeSpriteGraphic(graphic:FlxSprite, w, h, color:FlxColor) {
+		graphic.makeGraphic(w, h, color);
+		graphic.pixels.fillRect(new Rectangle(0, 190, graphic.width, 5), 0x0);
+
+		graphic.pixels.fillRect(new Rectangle(0, 0, cornerSize, cornerSize), 0x0); // top left
+		drawSpriteCorner(graphic, false, false, color);
+
+		graphic.pixels.fillRect(new Rectangle(graphic.width - cornerSize, 0, cornerSize, cornerSize), 0x0); // top right
+		drawSpriteCorner(graphic, true, false, color);
+
+		graphic.pixels.fillRect(new Rectangle(0, graphic.height - cornerSize, cornerSize, cornerSize), 0x0); // bottom left
+		drawSpriteCorner(graphic, false, true, color);
+
+		graphic.pixels.fillRect(new Rectangle(graphic.width - cornerSize, graphic.height - cornerSize, cornerSize, cornerSize), 0x0); // bottom right
+		drawSpriteCorner(graphic, true, true, color);
+	}
+
+	function drawSpriteCorner(graphic:FlxSprite, flipX:Bool, flipY:Bool, color:FlxColor) {
+		var antiX:Float = (graphic.width - cornerSize);
+		var antiY:Float = flipY ? (graphic.height - 1) : 0;
+		if (flipY) antiY -= 2;
+		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 1), Std.int(Math.abs(antiY - 8)), 10, 3), color);
+		if (flipY) antiY += 1;
+		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 2), Std.int(Math.abs(antiY - 6)), 9, 2), color);
+		if (flipY) antiY += 1;
+		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 3), Std.int(Math.abs(antiY - 5)), 8, 1), color);
+		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 4), Std.int(Math.abs(antiY - 4)), 7, 1), color);
+		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 5), Std.int(Math.abs(antiY - 3)), 6, 1), color);
+		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 6), Std.int(Math.abs(antiY - 2)), 5, 1), color);
+		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 8), Std.int(Math.abs(antiY - 1)), 3, 1), color);
 	}
 }

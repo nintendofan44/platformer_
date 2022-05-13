@@ -111,12 +111,12 @@ class OptionsState extends MusicBeatState
 		if (curSelected >= options.length)
 			curSelected = 0;
 
-		var bullShit:Int = 0;
+		var ihadastroke:Int = 0;
 
 		var duration:Float = 1;
 		for (item in grpOptions.members) {
-			item.targetY = bullShit - curSelected;
-			bullShit++;
+			item.targetY = ihadastroke - curSelected;
+			ihadastroke++;
 
 			FlxTween.tween(item, {alpha: 0.6}, duration - 0.65, {ease: FlxEase.expoInOut});
 			if (item.targetY == 0) {

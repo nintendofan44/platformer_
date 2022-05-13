@@ -1,5 +1,6 @@
 package states;
 
+import flixel.addons.ui.FlxUISlider;
 import flixel.util.FlxTimer;
 import flixel.util.FlxStringUtil;
 import flixel.text.FlxText;
@@ -27,6 +28,7 @@ import openfl.geom.Rectangle;
 import openfl.media.Sound;
 import sys.thread.Thread;
 import flixel.math.FlxPoint;
+import flixel.addons.ui.FlxUISlider;
 
 class WFteststate extends MusicBeatState {
 	var ww:Int = 534;
@@ -52,6 +54,10 @@ class WFteststate extends MusicBeatState {
 	var songPercent:Float = 0;
 
 	var timeLeft:FlxText;
+
+	var introDuration:Float = 1.0;
+
+	var volumeSlider:FlxUISlider; // just to make it fancy B)
 
 	public function new(music:String) {
 		super();
@@ -85,7 +91,6 @@ class WFteststate extends MusicBeatState {
 		audioManagerBg.scrollFactor.set();
 		audioManagerBg.screenCenter();
 		audioManagerBg.y += 100;
-		audioManagerBg.alpha = 0;
 		add(audioManagerBg);
 
 		var tex = AssetPaths.getSparrowAtlas('cd', 'shared');
@@ -94,13 +99,10 @@ class WFteststate extends MusicBeatState {
 		disc.frames = tex;
 		disc.animation.addByPrefix("cd", "cd", 24);
 		disc.animation.play("cd");
-		disc.scale.x = 0;
-		disc.alpha = 0;
 		add(disc);
 
 		waveformSprite = new FlxSprite(350, 271).makeGraphic(ww, hh, FlxColor.BLACK);
 		waveformSprite.cameras = [hudCamera];
-		waveformSprite.alpha = 0;
 		add(waveformSprite);
 
 		timeLeft = new FlxText(0, 0, FlxG.width, "", 45);
@@ -108,8 +110,11 @@ class WFteststate extends MusicBeatState {
 		timeLeft.cameras = [hudCamera];
 		timeLeft.scrollFactor.set();
 		timeLeft.screenCenter();
-		timeLeft.alpha = 0;
 		add(timeLeft);
+
+		volumeSlider = new FlxUISlider(FlxG.sound.music, 'volume', 341, 1100, 0, 1, 303, 26, 5, FlxColor.fromRGB(255, 87, 51), FlxColor.GRAY);
+		volumeSlider.cameras = [hudCamera];
+		add(volumeSlider);
 
 		super.create();
 
@@ -119,23 +124,36 @@ class WFteststate extends MusicBeatState {
 		updateTime = true;
 		songLength = FlxG.sound.music.length;
 
-		FlxTween.tween(disc, {alpha: 1, 'scale.x': 1}, 0.5, {ease: FlxEase.expoInOut});
-		FlxTween.tween(audioManagerBg, {alpha: 1}, 0.3, {ease: FlxEase.expoInOut});
-		FlxTween.tween(waveformSprite, {alpha: 1}, 0.3, {ease: FlxEase.expoInOut});
-		FlxTween.tween(timeLeft, {alpha: 1}, 0.3, {ease: FlxEase.expoInOut});
+		disc.scale.x = 0;
+		disc.alpha = 0;
+		FlxTween.tween(disc, {alpha: 1, 'scale.x': 1}, introDuration, {ease: FlxEase.expoInOut});
+
+		audioManagerBg.alpha = 0;
+		FlxTween.tween(audioManagerBg, {alpha: 1}, introDuration, {ease: FlxEase.expoInOut});
+
+		waveformSprite.scale.x = 0;
+		waveformSprite.alpha = 0;
+		FlxTween.tween(waveformSprite, {alpha: 1, 'scale.x': 1}, introDuration, {ease: FlxEase.expoInOut});
+
+		timeLeft.scale.x = 0;
+		timeLeft.alpha = 0;
+		FlxTween.tween(timeLeft, {alpha: 1, 'scale.x': 1}, introDuration, {ease: FlxEase.expoInOut});
+
+		FlxTween.tween(volumeSlider, {y: 538}, introDuration, {ease: FlxEase.expoInOut});
 	}
 
 	override public function update(elapsed:Float) {
 		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
 
-		debugControls(disc);
+		debugControls(volumeSlider);
 
 		if (controls.BACK) {
-			FlxTween.tween(disc, {alpha: 0, 'scale.x': 0}, 0.3, {ease: FlxEase.expoInOut});
-			FlxTween.tween(audioManagerBg, {alpha: 0}, 0.3, {ease: FlxEase.expoInOut});
-			FlxTween.tween(waveformSprite, {alpha: 0}, 0.3, {ease: FlxEase.expoInOut});
-			FlxTween.tween(timeLeft, {alpha: 0}, 0.3, {ease: FlxEase.expoInOut});
-			new FlxTimer().start(0.4, function(tmr:FlxTimer) {
+			FlxTween.tween(disc, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
+			FlxTween.tween(audioManagerBg, {alpha: 0}, introDuration, {ease: FlxEase.expoInOut});
+			FlxTween.tween(waveformSprite, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
+			FlxTween.tween(timeLeft, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
+			FlxTween.tween(volumeSlider, {y: 1100}, introDuration, {ease: FlxEase.expoInOut});
+			new FlxTimer().start(introDuration + 0.1, function(tmr:FlxTimer) {
 				MusicBeatState.switchState(new TitleScreen());
 				updateTime = false;
 				FlxG.sound.music.stop();

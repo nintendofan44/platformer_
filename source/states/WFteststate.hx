@@ -1,5 +1,9 @@
 package states;
 
+import flixel.addons.ui.FlxUIInputText;
+import flixel.addons.ui.FlxUIButton;
+import flixel.ui.FlxButton;
+import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUISlider;
 import flixel.util.FlxTimer;
 import flixel.util.FlxStringUtil;
@@ -59,6 +63,11 @@ class WFteststate extends MusicBeatState {
 
 	var volumeSlider:FlxUISlider; // just to make it fancy B)
 
+	var loadButton:FlxUIButton;
+	var type:FlxUIInputText;
+
+	private var blockPressWhileTypingOn:Array<FlxUIInputText> = [];
+
 	public function new(music:String) {
 		super();
 		this.music = music;
@@ -116,13 +125,23 @@ class WFteststate extends MusicBeatState {
 		volumeSlider.cameras = [hudCamera];
 		add(volumeSlider);
 
+		loadButton = new FlxUIButton(701, 565, "Load", loadMus);
+		loadButton.resize(205, 28);
+		loadButton.cameras = [hudCamera];
+		add(loadButton);
+
+		type = new FlxUIInputText(663, 512, 277, '', 18, FlxColor.WHITE, FlxColor.BLACK);
+		type.fieldBorderColor = FlxColor.WHITE;
+		type.fieldBorderThickness = 3;
+		type.maxLength = 20;
+		type.resize(277, 34);
+		type.cameras = [hudCamera];
+		add(type);
+		blockPressWhileTypingOn.push(type);
+
 		super.create();
 
-		audioBuffer = AudioBuffer.fromFile(music);
-		bytes = audioBuffer.data.toBytes();
-		FlxG.sound.playMusic(Sound.fromAudioBuffer(audioBuffer));
-		updateTime = true;
-		songLength = FlxG.sound.music.length;
+		startMusic(music, false);
 
 		disc.scale.x = 0;
 		disc.alpha = 0;
@@ -145,21 +164,34 @@ class WFteststate extends MusicBeatState {
 	override public function update(elapsed:Float) {
 		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
 
-		debugControls(volumeSlider);
+		var blockInput:Bool = false;
+		for (inputText in blockPressWhileTypingOn) {
+			if(inputText.hasFocus) {
+				FlxG.sound.muteKeys = [];
+				FlxG.sound.volumeDownKeys = [];
+				FlxG.sound.volumeUpKeys = [];
+				blockInput = true;
+				break;
+			}
+		}
 
-		if (controls.BACK) {
-			FlxTween.tween(disc, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
-			FlxTween.tween(audioManagerBg, {alpha: 0}, introDuration, {ease: FlxEase.expoInOut});
-			FlxTween.tween(waveformSprite, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
-			FlxTween.tween(timeLeft, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
-			FlxTween.tween(volumeSlider, {y: 1100}, introDuration, {ease: FlxEase.expoInOut});
-			new FlxTimer().start(introDuration + 0.1, function(tmr:FlxTimer) {
-				MusicBeatState.switchState(new TitleScreen());
-				updateTime = false;
-				FlxG.sound.music.stop();
-				FlxG.sound.music = null;
-				bgColor = FlxColor.BLACK;
-			});
+		if (!blockInput) {
+			debugControls(loadButton);
+
+			if (controls.BACK) {
+				FlxTween.tween(disc, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
+				FlxTween.tween(audioManagerBg, {alpha: 0}, introDuration, {ease: FlxEase.expoInOut});
+				FlxTween.tween(waveformSprite, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
+				FlxTween.tween(timeLeft, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
+				FlxTween.tween(volumeSlider, {y: 1100}, introDuration, {ease: FlxEase.expoInOut});
+				new FlxTimer().start(introDuration + 0.1, function(tmr:FlxTimer) {
+					MusicBeatState.switchState(new TitleScreen());
+					updateTime = false;
+					FlxG.sound.music.stop();
+					FlxG.sound.music = null;
+					bgColor = FlxColor.BLACK;
+				});
+			}
 		}
 
 		super.update(elapsed);
@@ -300,5 +332,26 @@ class WFteststate extends MusicBeatState {
 		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 5), Std.int(Math.abs(antiY - 3)), 6, 1), color);
 		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 6), Std.int(Math.abs(antiY - 2)), 5, 1), color);
 		graphic.pixels.fillRect(new Rectangle((flipX ? antiX : 8), Std.int(Math.abs(antiY - 1)), 3, 1), color);
+	}
+
+	function startMusic(path:String, reload:Bool) {
+		if (reload) {
+			updateTime = false;
+			FlxG.sound.music.stop();
+			FlxG.sound.music = null;
+		}
+
+		audioBuffer = AudioBuffer.fromFile(path);
+		bytes = audioBuffer.data.toBytes();
+		FlxG.sound.playMusic(Sound.fromAudioBuffer(audioBuffer));
+		songLength = FlxG.sound.music.length;
+
+		if (!updateTime) updateTime = true;
+	}
+
+	function loadMus()
+	{
+		startMusic(AssetPaths.musicString(type.text), true);
+		type.text = "";
 	}
 }

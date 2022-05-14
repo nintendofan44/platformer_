@@ -1,5 +1,6 @@
 package states;
 
+import flixel.group.FlxSpriteGroup;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUIButton;
 import flixel.ui.FlxButton;
@@ -65,6 +66,7 @@ class WFteststate extends MusicBeatState {
 
 	var loadButton:FlxUIButton;
 	var type:FlxUIInputText;
+	var volGrp:FlxSpriteGroup;
 
 	private var blockPressWhileTypingOn:Array<FlxUIInputText> = [];
 
@@ -93,7 +95,7 @@ class WFteststate extends MusicBeatState {
 		FlxCamera.defaultCameras = [mainCamera];
 		CustomFadeTransition.nextCamera = transitionCamera;
 
-		var toAdd:Int = 100;
+		var toAdd:Int = 200;
 		audioManagerBg = new FlxSprite(0, 0);
 		makeSpriteGraphic(audioManagerBg, ww + toAdd, hh + toAdd, FlxColor.BLACK);
 		audioManagerBg.cameras = [hudCamera];
@@ -103,34 +105,37 @@ class WFteststate extends MusicBeatState {
 		add(audioManagerBg);
 
 		var tex = AssetPaths.getSparrowAtlas('cd', 'shared');
-		disc = new FlxSprite(904, 314);
+		disc = new FlxSprite(951, 614);
 		disc.cameras = [hudCamera];
 		disc.frames = tex;
 		disc.animation.addByPrefix("cd", "cd", 24);
 		disc.animation.play("cd");
 		add(disc);
 
-		waveformSprite = new FlxSprite(350, 271).makeGraphic(ww, hh, FlxColor.BLACK);
+		waveformSprite = new FlxSprite(368, 435).makeGraphic(ww, hh, FlxColor.BLACK);
 		waveformSprite.cameras = [hudCamera];
 		add(waveformSprite);
 
-		timeLeft = new FlxText(0, 0, FlxG.width, "", 45);
+		timeLeft = new FlxText(309, 373.5, FlxG.width, "", 45);
 		timeLeft.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), 45, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		timeLeft.cameras = [hudCamera];
 		timeLeft.scrollFactor.set();
-		timeLeft.screenCenter();
 		add(timeLeft);
 
-		volumeSlider = new FlxUISlider(FlxG.sound.music, 'volume', 341, 1100, 0, 1, 303, 26, 5, FlxColor.fromRGB(255, 87, 51), FlxColor.GRAY);
-		volumeSlider.cameras = [hudCamera];
-		add(volumeSlider);
+		volGrp = new FlxSpriteGroup(290, 1100);
+		volGrp.cameras = [hudCamera];
+		add(volGrp);
 
-		loadButton = new FlxUIButton(701, 565, "Load", loadMus);
+		volumeSlider = new FlxUISlider(FlxG.sound.music, 'volume', 0, 0, 0, 1, 303, 26, 5, FlxColor.fromRGB(255, 87, 51), FlxColor.GRAY);
+		volumeSlider.cameras = [hudCamera];
+		volGrp.add(volumeSlider);
+
+		loadButton = new FlxUIButton(657, 335, "Load", loadMus);
 		loadButton.resize(205, 28);
 		loadButton.cameras = [hudCamera];
 		add(loadButton);
 
-		type = new FlxUIInputText(663, 512, 277, '', 18, FlxColor.WHITE, FlxColor.BLACK);
+		type = new FlxUIInputText(619, 282, 277, '', 18, FlxColor.WHITE, FlxColor.BLACK);
 		type.fieldBorderColor = FlxColor.WHITE;
 		type.fieldBorderThickness = 3;
 		type.maxLength = 20;
@@ -158,7 +163,15 @@ class WFteststate extends MusicBeatState {
 		timeLeft.alpha = 0;
 		FlxTween.tween(timeLeft, {alpha: 1, 'scale.x': 1}, introDuration, {ease: FlxEase.expoInOut});
 
-		FlxTween.tween(volumeSlider, {y: 538}, introDuration, {ease: FlxEase.expoInOut});
+		loadButton.scale.x = 0;
+		loadButton.alpha = 0;
+		FlxTween.tween(loadButton, {alpha: 1, 'scale.x': 1}, introDuration, {ease: FlxEase.expoInOut});
+
+		type.scale.x = 0;
+		type.alpha = 0;
+		FlxTween.tween(type, {alpha: 1, 'scale.x': 1}, introDuration, {ease: FlxEase.expoInOut});
+
+		FlxTween.tween(volumeSlider, {y: 267}, introDuration, {ease: FlxEase.expoInOut});
 	}
 
 	override public function update(elapsed:Float) {
@@ -167,16 +180,17 @@ class WFteststate extends MusicBeatState {
 		var blockInput:Bool = false;
 		for (inputText in blockPressWhileTypingOn) {
 			if(inputText.hasFocus) {
-				FlxG.sound.muteKeys = [];
-				FlxG.sound.volumeDownKeys = [];
-				FlxG.sound.volumeUpKeys = [];
 				blockInput = true;
 				break;
 			}
 		}
 
 		if (!blockInput) {
-			debugControls(loadButton);
+			/*for (slider in volGrp.members) {
+				debugControls(slider);
+			}*/
+
+			debugControls(timeLeft);
 
 			if (controls.BACK) {
 				FlxTween.tween(disc, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
@@ -184,6 +198,8 @@ class WFteststate extends MusicBeatState {
 				FlxTween.tween(waveformSprite, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
 				FlxTween.tween(timeLeft, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
 				FlxTween.tween(volumeSlider, {y: 1100}, introDuration, {ease: FlxEase.expoInOut});
+				FlxTween.tween(loadButton, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
+				FlxTween.tween(type, {alpha: 0, 'scale.x': 0}, introDuration, {ease: FlxEase.expoInOut});
 				new FlxTimer().start(introDuration + 0.1, function(tmr:FlxTimer) {
 					MusicBeatState.switchState(new TitleScreen());
 					updateTime = false;
@@ -253,18 +269,23 @@ class WFteststate extends MusicBeatState {
 			}
 
 			if ((index % samplesPerRow) == 0) {
+				if (drawIndex > ww) drawIndex = ww;
+
 				var mult:Float = 8;
-				// if (drawIndex == hh) freqHit(x, y, width, height);
 				var pixelsMin:Float = Math.abs(min * (size * mult));
 				var pixelsMax:Float = max * (size * mult);
+
 				var rect:Rectangle = new Rectangle(drawIndex, Std.int((size * (mult / 2))) - pixelsMin, 1, pixelsMin + pixelsMax);
+				if (rect.y < Std.int((size * (mult / 2))) - pixelsMin || rect.y > Std.int((size * (mult / 2))) - pixelsMin)
+					rect.y = Std.int((size * (mult / 2))) - pixelsMin;
+
 				waveformSprite.pixels.fillRect(rect, FlxColor.WHITE); // waveform lookin good
 				drawIndex++;
 
 				min = 0;
 				max = 0;
 
-				if (drawIndex > hh) break;
+				if (drawIndex > ww) break;
 			}
 
 			index++;
@@ -339,12 +360,20 @@ class WFteststate extends MusicBeatState {
 			updateTime = false;
 			FlxG.sound.music.stop();
 			FlxG.sound.music = null;
+
+			volGrp.clear();
 		}
 
 		audioBuffer = AudioBuffer.fromFile(path);
 		bytes = audioBuffer.data.toBytes();
 		FlxG.sound.playMusic(Sound.fromAudioBuffer(audioBuffer));
 		songLength = FlxG.sound.music.length;
+
+		if (reload) {
+			volumeSlider = new FlxUISlider(FlxG.sound.music, 'volume', 341, 1100, 0, 1, 303, 26, 5, FlxColor.fromRGB(255, 87, 51), FlxColor.GRAY);
+			volumeSlider.cameras = [hudCamera];
+			volGrp.add(volumeSlider);
+		}
 
 		if (!updateTime) updateTime = true;
 	}

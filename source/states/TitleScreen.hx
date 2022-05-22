@@ -43,7 +43,7 @@ class TitleScreen extends MusicBeatState {
 
     // arrays and such
     private var titleArray:Array<FlxText> = [];
-    private var buttonArray:Array<String> = ['playButton', 'options', 'exitGame', 'waveform test'];
+    private var buttonArray:Array<String> = ['playButton', 'options', 'exitGame', 'waveform test', '3d'];
     private var anotherButtonArray:Array<FlxSprite> = [];
 
     // camera stuff
@@ -281,6 +281,8 @@ class TitleScreen extends MusicBeatState {
 				Sys.exit(0);
 			case 'waveform test':
 				MusicBeatState.switchState(new WFteststate(AssetPaths.musicString('menu')));
+            case '3d':
+                MusicBeatState.switchState(new ThreeD());
 		}		
 	}
 

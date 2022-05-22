@@ -50,8 +50,6 @@ class PlayState extends CourseState {
 		score.borderSize = 1.25;
 		add(score);
 
-		super.create();
-
 		AssetPaths.clearUnusedMemory();
 	}
 
@@ -69,8 +67,7 @@ class PlayState extends CourseState {
 
 		for (coin in coinGroup.members) {
 			if (coin.exists) {
-				if (player.overlaps(coin))
-				{
+				if (player.overlaps(coin)) {
 					coinCallback(coin);
 				}
 			}
@@ -78,8 +75,7 @@ class PlayState extends CourseState {
 
 		for (trophy in trophyGroup.members) {
 			if (trophy.exists) {
-				if (player.overlaps(trophy))
-				{
+				if (player.overlaps(trophy)) {
 					trophyCallback(trophy);
 					openSubState(new ScoreSubstate(scoreString, scoreNum));
 					Highscore.saveScore(level, scoreNum);
@@ -102,11 +98,9 @@ class PlayState extends CourseState {
 		super.stepHit();
 	}
 
-	public override function openSubState(SubState:FlxSubState):Void
-	{
+	public override function openSubState(SubState:FlxSubState):Void {
 		#if FLX_MOUSE
-		if (cursor != null && hideCursorOnSubstate && cursor.visible == true)
-		{
+		if (cursor != null && hideCursorOnSubstate && cursor.visible == true) {
 			_cursorHidden = true;
 			cursor.visible = false;
 		}

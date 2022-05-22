@@ -67,11 +67,11 @@ class CourseState extends MusicBeatState {
         final map = new TiledMap(AssetPaths.tmx('$levelName', 'levels'));
 
 		mainCam = new FlxCamera();
-		//hudCam = new FlxCamera();
-		//hudCam.bgColor.alpha = 0;
+		hudCam = new FlxCamera();
+		hudCam.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(mainCam);
-		//FlxG.cameras.add(hudCam);
+		FlxG.cameras.add(hudCam);
 
 		FlxCamera.defaultCameras = [mainCam];
 
@@ -269,7 +269,7 @@ class CourseState extends MusicBeatState {
 		}
 
 		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, Utilities.bound(1 - (elapsed * 3.125), 0, 1));
-		//hudCam.zoom = FlxMath.lerp(defaulthudCamZoom, hudCam.zoom, Utilities.bound(1 - (elapsed * 3.125), 0, 1));
+		hudCam.zoom = FlxMath.lerp(defaulthudCamZoom, hudCam.zoom, Utilities.bound(1 - (elapsed * 3.125), 0, 1));
 
 		FlxG.collide(player, levelBounds);
 		FlxG.collide(player, dirtGroup);
@@ -301,7 +301,7 @@ class CourseState extends MusicBeatState {
 
 		if (FlxG.camera.zoom < maxCamZoomLimit && curBeat % 1 == 0) {
 			FlxG.camera.zoom += camZoom;
-			//hudCam.zoom += hudCamZoom;
+			hudCam.zoom += hudCamZoom;
 		}
 
 		if (curBeat % player.beatPercent == 0

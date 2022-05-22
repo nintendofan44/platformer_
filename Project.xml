@@ -41,6 +41,8 @@
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
+
+	<define name="BUILD_CRASH_DIALOG" />
 	
 	<section if="PRELOAD_ALL">
 		<library name="shared"   preload="true" />
@@ -66,19 +68,14 @@
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
-
-	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />
-	<haxelib name="hscript" />
-
-	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
+	<haxelib name="haxeui-core" />
+	<haxelib name="haxeui-openfl" />
+	<haxedev set='webgl' />
 
 	<!--Might as well use this sometime haha-->
 	<haxelib name="away3d" />
-
-	<!--In case you want to use nape with flixel-->
-	<!--<haxelib name="nape-haxe4" />-->
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
@@ -113,6 +110,13 @@
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
 	<!-- _________________________________ Custom _______________________________ -->
+
+	<!-- Build external crash reporter with platform-dependent batch script -->
+	<section if="BUILD_CRASH_DIALOG">
+		<section if="release">
+			<postbuild cmd="build-crash-dialog.bat" if="windows" />
+		</section>
+	</section>
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 	

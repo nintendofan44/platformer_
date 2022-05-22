@@ -158,6 +158,11 @@ class AssetPaths {
 		return returnAsset;
 	}
 
+	inline static public function ThreeDtex(fileExt:String, key:String, ?library:String)
+	{
+		return getPath('images/$key.$fileExt', IMAGE, library);
+	}
+
 	inline static public function levelIcon(key:String, ?library:String):FlxGraphic 
 	{
 		var returnAsset:FlxGraphic = returnIconGraphic(key, library);
@@ -212,6 +217,21 @@ class AssetPaths {
 	// dont worry bro
 	// im not a dumbass who says code is mine even if it isn't
 	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
+
+	public static function return3dTexture(fileExt:String, key:String, ?library:String) {
+		var path = getPath('images/$key.$fileExt', IMAGE, library);
+		if (OpenFlAssets.exists(path, IMAGE)) {
+			if (!currentTrackedAssets.exists(path)) {
+				var newGraphic:FlxGraphic = FlxG.bitmap.add(path, false, path);
+				newGraphic.persist = true;
+				currentTrackedAssets.set(path, newGraphic);
+			}
+			localTrackedAssets.push(path);
+			return currentTrackedAssets.get(path);
+		}
+		trace('its null');
+		return null;
+	}
 
 	public static function returnGraphic(key:String, ?library:String) {
 		var path = getPath('images/$key.png', IMAGE, library);

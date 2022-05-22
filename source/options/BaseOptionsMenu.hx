@@ -1,5 +1,6 @@
 package options;
 
+import base.GameSettings;
 import helpers.AssetPaths;
 import flash.text.TextField;
 import flixel.FlxG;
@@ -82,6 +83,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		descText.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		descText.scrollFactor.set();
 		descText.borderSize = 2.4;
+		descText.antialiasing = GameSettings.antialias;
 		add(descText);
 
 		for (i in 0...optionsArray.length)
@@ -252,10 +254,6 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			}
 		}
 
-		if(char != null && char.animation.curAnim.finished) {
-			char.dance();
-		}
-
 		if(nextAccept > 0) {
 			nextAccept -= 1;
 		}
@@ -318,6 +316,24 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		curOption = optionsArray[curSelected]; //shorter lol
 	}
 
+	var lastBeatHit:Int = -1;
+	override public function beatHit() {
+		super.beatHit();
+
+		if (lastBeatHit == curBeat) return;
+
+		if (curBeat % char.beatPercent == 0
+			&& (char.skin != 1 || char.skin != 2 || char.skin != 3)
+			&& char.animation.curAnim != null) {
+			switch (char.skin) {
+				default:
+					char.dance();
+			}
+		}
+
+		lastBeatHit = curBeat;
+	}
+
 	public function reloadChar()
 	{
 		var wasVisible:Bool = false;
@@ -328,10 +344,11 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			char.destroy();
 		}
 
-		char = new Player(840, 170, 4, true, true);
+		char = new Player(840, 0, 4, true, true);
+		char.screenCenter(Y);
 		char.setGraphicSize(Std.int(char.width * 0.75));
 		char.updateHitbox();
-		char.dance();
+		char.antialiasing = GameSettings.antialias;
 		insert(1, char);
 		char.visible = wasVisible;
 	}

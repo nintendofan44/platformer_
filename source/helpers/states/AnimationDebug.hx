@@ -1,5 +1,6 @@
 package helpers.states;
 
+import base.GameSettings;
 import states.TitleScreen;
 import away3d.entities.Sprite3D; // hmm
 import states.MusicBeatState;
@@ -49,6 +50,7 @@ class AnimationDebug extends MusicBeatState
 		textAnim = new FlxText(300, 16);
 		textAnim.size = 26;
 		textAnim.scrollFactor.set();
+		textAnim.antialiasing = GameSettings.antialias;
 		add(textAnim);
 
 		genBoyOffsets();
@@ -71,6 +73,7 @@ class AnimationDebug extends MusicBeatState
 			var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, anim + ": " + offsets, 15);
 			text.scrollFactor.set();
 			text.color = FlxColor.BLUE;
+			text.antialiasing = GameSettings.antialias;
 			dumbTexts.add(text);
 
 			if (pushList)

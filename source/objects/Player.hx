@@ -253,9 +253,11 @@ class Player extends FlxSprite {
 				animation.addByPrefix('right', 'right', 24);
 				animation.addByPrefix('walk', 'walk', 24);
 
-				var scaleNum:Float = 2.2;
-				scale.set(scaleNum, scaleNum);
-				updateHitbox();
+				if (inOptions) {
+					var scaleNum:Float = 2.2;
+					scale.set(scaleNum, scaleNum);
+					updateHitbox();
+				}
 
 				addOffset('left', 0, 0);
 				addOffset('right', 0, 0);

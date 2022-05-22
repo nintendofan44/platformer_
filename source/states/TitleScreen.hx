@@ -82,14 +82,17 @@ class TitleScreen extends MusicBeatState {
 
         titleShadow = new FlxText(0, 0, FlxG.width, gameName, titleSize);
 		titleShadow.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), titleSize, FlxColor.fromRGB(0, 0, 0), CENTER, FlxTextBorderStyle.NONE);
+        titleShadow.antialiasing = GameSettings.antialias;
 
         title = new FlxText(0, 0, FlxG.width, gameName, titleSize);
 		title.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), titleSize, FlxColor.fromRGB(255, 255, 255), CENTER, FlxTextBorderStyle.NONE);
 		title.screenCenter();
         title.y -= 190;
+        title.antialiasing = GameSettings.antialias;
 
         titleOuterShadow = new FlxText(0, 0, FlxG.width, gameName, titleSize);
 		titleOuterShadow.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), titleSize, FlxColor.fromRGB(58, 58, 58), CENTER, FlxTextBorderStyle.NONE);
+        titleOuterShadow.antialiasing = GameSettings.antialias;
 
         for (i in 0...buttonArray.length) {
 			var button:FlxSprite = new FlxSprite(0, FlxG.height * 1.6);

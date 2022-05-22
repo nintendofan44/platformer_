@@ -59,7 +59,7 @@ class PlayState extends CourseState {
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
-		if (controls.RESET && GameSettings.disableReset)
+		if (controls.RESET && !GameSettings.disableReset)
 			MusicBeatState.switchState(new PlayState(level, world, playerNum)); // bad but whateva, it works
 
 		super.update(elapsed);
@@ -139,6 +139,7 @@ class ScoreSubstate extends MusicBeatSubstate {
 		score.scrollFactor.set();
 		score.borderSize = 1.25;
 		score.screenCenter();
+		score.antialiasing = GameSettings.antialias;
 		add(score);
 	}
 

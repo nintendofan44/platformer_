@@ -30,9 +30,9 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 	{
 		title = 'Gameplay Settings';
 
-		var option:Option = new Option('ptBR',
-			'Você é br ou sabe falar português \nseja bem vindo ao jogo meu amigo',
-			'ptBR',
+		var option:Option = new Option('Disable Reset',
+			"The key you bound to the reset control won't do anything in game",
+			'disableReset',
 			'bool',
 			false);
 		addOption(option);

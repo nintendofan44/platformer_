@@ -1,5 +1,6 @@
 package states;
 
+import base.GameSettings;
 import flixel.group.FlxSpriteGroup;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUIButton;
@@ -120,6 +121,7 @@ class WFteststate extends MusicBeatState {
 		timeLeft.setFormat(AssetPaths.font("DotGothic16-Regular.ttf"), 45, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		timeLeft.cameras = [hudCamera];
 		timeLeft.scrollFactor.set();
+		timeLeft.antialiasing = GameSettings.antialias;
 		add(timeLeft);
 
 		volGrp = new FlxSpriteGroup(290, 1100);

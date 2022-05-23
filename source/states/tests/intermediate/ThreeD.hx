@@ -12,7 +12,7 @@ import away3d.materials.lightpickers.StaticLightPicker;
 import away3d.primitives.*;
 import away3d.textures.BitmapTexture;
 import away3d.utils.*;
-import flixel.FlxCamera;
+import objects.FlxCameraCustom;
 import flixel.FlxG;
 import helpers.Utilities;
 import openfl.Assets;
@@ -24,8 +24,8 @@ import openfl.geom.*;
 import openfl.utils.*;
 
 class ThreeD extends MusicBeatState {
-    var mainCam:FlxCamera;
-	var hudCam:FlxCamera;
+    var mainCam:FlxCameraCustom;
+	var hudCam:FlxCameraCustom;
 
     // engine variables
 	private var scene:Scene3D;
@@ -58,15 +58,15 @@ class ThreeD extends MusicBeatState {
 	private var lastMouseY:Float;
 
     override public function create() {
-        mainCam = new FlxCamera();
+        mainCam = new FlxCameraCustom();
         mainCam.bgColor.alpha = 0;
-		hudCam = new FlxCamera();
+		hudCam = new FlxCameraCustom();
 		hudCam.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(mainCam);
 		FlxG.cameras.add(hudCam);
 
-		FlxCamera.defaultCameras = [mainCam];
+		FlxCameraCustom.defaultCameras = [mainCam];
 
         init3Dtest(hudCam);
         super.create();
@@ -75,7 +75,7 @@ class ThreeD extends MusicBeatState {
     /**
 	 * Global initialise function
 	 */
-	private function init3Dtest(cam:FlxCamera):Void {
+	private function init3Dtest(cam:FlxCameraCustom):Void {
 		initEngine(cam);
 		initLights();
 		initMaterials();
@@ -86,10 +86,7 @@ class ThreeD extends MusicBeatState {
 	/**
 	 * Initialise the engine
 	 */
-	private function initEngine(cam:FlxCamera):Void {
-		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-		Lib.current.stage.align = StageAlign.TOP_LEFT;
-
+	private function initEngine(cam:FlxCameraCustom):Void {
 		scene = new Scene3D();
 
 		cameraThing = new Camera3D();
@@ -212,7 +209,7 @@ class ThreeD extends MusicBeatState {
 	/**
 	 * Initialise the listeners
 	 */
-	private function initListeners(cam:FlxCamera):Void {
+	private function initListeners(cam:FlxCameraCustom):Void {
 		cam.flashSprite.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		Lib.current.stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		Lib.current.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);

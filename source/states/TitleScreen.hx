@@ -1,5 +1,7 @@
 package states;
 
+import states.tests.intermediate.ThreeD;
+import states.tests.advanced.tree.Tree;
 import options.OptionsState;
 import base.PlayerSettings;
 import lime.tools.WindowData;
@@ -43,7 +45,7 @@ class TitleScreen extends MusicBeatState {
 
     // arrays and such
     private var titleArray:Array<FlxText> = [];
-    private var buttonArray:Array<String> = ['playButton', 'options', 'exitGame', 'waveform test', '3d'];
+    private var buttonArray:Array<String> = ['playButton', 'options', 'exitGame', 'waveform test', '3d', '3d2', '3d3'];
     private var anotherButtonArray:Array<FlxSprite> = [];
 
     // camera stuff
@@ -283,6 +285,8 @@ class TitleScreen extends MusicBeatState {
 				MusicBeatState.switchState(new WFteststate(AssetPaths.musicString('menu')));
             case '3d':
                 MusicBeatState.switchState(new ThreeD());
+            case '3d2':
+                MusicBeatState.switchState(new Tree());
 		}		
 	}
 

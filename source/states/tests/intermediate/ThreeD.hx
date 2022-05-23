@@ -1,4 +1,4 @@
-package states;
+package states.tests.intermediate;
 
 import helpers.AssetPaths;
 import away3d.cameras.*;
@@ -117,27 +117,27 @@ class ThreeD extends MusicBeatState {
 	 * Initialise the materials
 	 */
 	private function initMaterials():Void {
-		planeMaterial = new TextureMaterial(Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/floor_diffuse', 'textures')));
-		planeMaterial.specularMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/floor_specular', 'textures'));
-		planeMaterial.normalMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/floor_normal', 'textures'));
+		planeMaterial = new TextureMaterial(Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/floor_diffuse', 'textures')));
+		planeMaterial.specularMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/floor_specular', 'textures'));
+		planeMaterial.normalMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/floor_normal', 'textures'));
 		planeMaterial.lightPicker = lightPicker;
 		planeMaterial.repeat = true;
 		planeMaterial.mipmap = false;
 
-		sphereMaterial = new TextureMaterial(Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/beachball_diffuse', 'textures')));
-		sphereMaterial.specularMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/beachball_specular', 'textures'));
+		sphereMaterial = new TextureMaterial(Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/beachball_diffuse', 'textures')));
+		sphereMaterial.specularMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/beachball_specular', 'textures'));
 		sphereMaterial.lightPicker = lightPicker;
 
-		cubeMaterial = new TextureMaterial(Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/trinket_diffuse', 'textures')));
-		cubeMaterial.specularMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/trinket_specular', 'textures'));
-		cubeMaterial.normalMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/trinket_normal', 'textures'));
+		cubeMaterial = new TextureMaterial(Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/trinket_diffuse', 'textures')));
+		cubeMaterial.specularMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/trinket_specular', 'textures'));
+		cubeMaterial.normalMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/trinket_normal', 'textures'));
 		cubeMaterial.lightPicker = lightPicker;
 		cubeMaterial.mipmap = false;
 
-		var weaveDiffuseTexture:BitmapTexture = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/weave_diffuse', 'textures'));
+		var weaveDiffuseTexture:BitmapTexture = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/weave_diffuse', 'textures'));
 		torusMaterial = new TextureMaterial(weaveDiffuseTexture);
 		torusMaterial.specularMap = weaveDiffuseTexture;
-		torusMaterial.normalMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/weave_normal', 'textures'));
+		torusMaterial.normalMap = Cast.bitmapTexture(AssetPaths.ThreeDtex('jpg', 'shading/test1/weave_normal', 'textures'));
 		torusMaterial.lightPicker = lightPicker;
 		torusMaterial.repeat = true;
 	}

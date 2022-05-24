@@ -174,6 +174,8 @@ class WFteststate extends MusicBeatState {
 		FlxTween.tween(type, {alpha: 1, 'scale.x': 1}, introDuration, {ease: FlxEase.expoInOut});
 
 		FlxTween.tween(volumeSlider, {y: 267}, introDuration, {ease: FlxEase.expoInOut});
+
+		FlxTween.tween(controls, {alpha: 1}, introDuration, {ease: FlxEase.expoInOut});
 	}
 
 	override public function update(elapsed:Float) {

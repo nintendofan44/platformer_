@@ -1,5 +1,6 @@
 ### VS Code
 export/*
+crash-dialog/build/*
 .vscode/*
 *.code-workspace
 

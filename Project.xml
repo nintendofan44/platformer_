@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://lime.software/project/1.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://lime.software/project/1.0.2 http://lime.software/xsd/project-1.0.2.xsd">
+<project 
+	xmlns="http://lime.software/project/1.0.3"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://lime.software/project/1.0.3 http://lime.software/xsd/project-1.0.3.xsd"
+>
 
 	<!-- _________________________ Application Settings _________________________ -->
 
@@ -37,31 +40,31 @@
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
-	
+
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 
-	<define name="BUILD_CRASH_DIALOG" />
-	
 	<section if="PRELOAD_ALL">
-		<library name="shared"   preload="true" />
-		<library name="levels"   preload="true" />
+		<library name="shared" preload="true" />
+		<library name="levels" preload="true" />
 		<library name="textures" preload="true" />
 	</section>
-	
+
 	<section if="NO_PRELOAD_ALL">
-		<library name="shared"   preload="false" />
-		<library name="levels"   preload="false" />
+		<library name="shared" preload="false" />
+		<library name="levels" preload="false" />
 		<library name="textures" preload="false" />
 	</section>
-	
-	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
-	<assets path="assets/levels"   library="levels"   exclude="*.ogg" if="web"/>
-	<assets path="assets/levels"   library="levels"   exclude="*.mp3" unless="web"/>
-	<assets path="assets/textures" library="textures"   exclude="*.ogg" if="web"/>
-	<assets path="assets/textures" library="textures"   exclude="*.mp3" unless="web"/>
+
+	<define name="BUILD_CRASH_DIALOG" />
+
+	<assets path="assets/shared" library="shared" exclude="*.ogg" if="web"/>
+	<assets path="assets/shared" library="shared" exclude="*.mp3" unless="web"/>
+	<assets path="assets/levels" library="levels" exclude="*.ogg" if="web"/>
+	<assets path="assets/levels" library="levels" exclude="*.mp3" unless="web"/>
+	<assets path="assets/textures" library="textures" exclude="*.ogg" if="web"/>
+	<assets path="assets/textures" library="textures" exclude="*.mp3" unless="web"/>
 
 	<assets path="assets/fonts" embed='true'/>
 
@@ -70,11 +73,7 @@
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
 	<haxelib name="flixel-ui" />
-	<haxelib name="haxeui-core" />
-	<haxelib name="haxeui-openfl" />
-	<haxedev set='webgl' />
-
-	<!--Might as well use this sometime haha-->
+	<haxelib name="hscript" />
 	<haxelib name="away3d" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
@@ -109,15 +108,22 @@
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
+	<!-- Akways enable Null Object Reference check for crash dialog -->
+	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
+	<haxedef name="HXCPP_STACK_LINE" if="release" />
+
+	<haxedef name="hscriptPos" />
+
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!-- Build external crash reporter with platform-dependent batch script -->
 	<section if="BUILD_CRASH_DIALOG">
 		<section if="release">
 			<postbuild cmd="build-crash-dialog.bat" if="windows" />
+			<postbuild cmd="./build-crash-dialog.sh" if="linux" />
 		</section>
 	</section>
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	
+
 </project>

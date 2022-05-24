@@ -7,7 +7,6 @@ import haxe.ui.core.Component;
 import haxe.ui.macros.ComponentMacros;
 import sys.io.File;
 import sys.io.Process;
-import states.TitleScreen;
 
 class Main
 {
@@ -74,7 +73,9 @@ class Main
 				mainView.findComponent("restart-button", Button).onClick = function(_)
 				{
 					#if windows
-					new Process('' + TitleScreen.gameName + '.exe', []);
+					new Process("IzzyEngine.exe", []);
+					#elseif linux
+					new Process("./Platformer", []);
 					#end
 
 					Sys.exit(0);

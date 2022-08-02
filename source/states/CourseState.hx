@@ -1,5 +1,7 @@
 package states;
 
+import lime.app.Application;
+import helpers.WindowUtils;
 import base.Conductor;
 import helpers.Highscore;
 import flixel.text.FlxText;
@@ -55,7 +57,6 @@ class CourseState extends MusicBeatState {
 
 	var hudShaders:Array<ShaderEffect> = [];
 	var mainShaders:Array<ShaderEffect> = [];
-	var bg:FlxSprite = new FlxSprite();
 
 	public var score:FlxText;
 	public var scoreString = "Score: ";
@@ -63,10 +64,23 @@ class CourseState extends MusicBeatState {
 
 	public var inSub:Bool = false;
 
+	// funny little thing
+	var _gameName:String = "Platformer";
+	var _window = Application.current.window;
+	var bg:FlxSprite = new FlxSprite();
+	var bgTransparent:FlxSprite = new FlxSprite();
+	var finished_scale:Bool = false;
+	var immovableWindow:Bool = false;
+	public var transparent_bg:Bool = false;
+
+	public var windowCoords:Array<Int> = [0, 0];
+	public var windowSizeCoords:Array<Int> = [0, 0];
+
     function createCourse(levelName:String, playerSpawn:{x:Float, y:Float}, world:Int, playerNum:Int) {
         final map = new TiledMap(AssetPaths.tmx('$levelName', 'levels'));
 
 		mainCam = new FlxCamera();
+		mainCam.bgColor.alpha = 0;
 		hudCam = new FlxCamera();
 		hudCam.bgColor.alpha = 0;
 
@@ -82,10 +96,31 @@ class CourseState extends MusicBeatState {
 		addShaderToCamera('hud', new Light());
 		addShaderToCamera('game', new Shadow());
 		addShaderToCamera('hud', new Shadow());*/
+		
+		WindowUtils.setWindowTitle(_window, 'Level: ' + levelName + ' | World: ' + world + ' | Character: ' + playerNum);
 
-		bg.makeGraphic(FlxG.width, FlxG.height, FlxColor.GRAY);
-		bg.screenCenter();
-		add(bg);
+		if (transparent_bg) {
+			bgTransparent.makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.fromRGB(2, 2, 2));
+			if (defaultCamZoom < 1)
+			{
+				bgTransparent.scale.scale(1 / defaultCamZoom);
+			}
+			bgTransparent.scrollFactor.set();
+			add(bgTransparent);
+
+			windowCoords = [327, 208];
+			windowSizeCoords = [706, 399];
+	
+			WindowUtils.getWindowsTransparent();
+			WindowUtils.setWindowSize(_window, windowSizeCoords[0], windowSizeCoords[1]);
+			WindowUtils.setWindowCoords(_window, windowCoords[0], windowCoords[1]);
+			WindowUtils.setWindowResizable(_window, false);
+			immovableWindow = transparent_bg;
+		} else {
+			bg.makeGraphic(FlxG.width, FlxG.height, FlxColor.GRAY);
+			bg.screenCenter();
+			add(bg);
+		}
 
 		generateFloor(map);
 		generateWoodBlocks(map);
@@ -271,6 +306,9 @@ class CourseState extends MusicBeatState {
 		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, Utilities.bound(1 - (elapsed * 3.125), 0, 1));
 		hudCam.zoom = FlxMath.lerp(defaulthudCamZoom, hudCam.zoom, Utilities.bound(1 - (elapsed * 3.125), 0, 1));
 
+		if (immovableWindow)
+			WindowUtils.setWindowCoords(_window, windowCoords[0], windowCoords[1]);
+
 		FlxG.collide(player, levelBounds);
 		FlxG.collide(player, dirtGroup);
 		FlxG.collide(player, groundGroup);
@@ -278,6 +316,13 @@ class CourseState extends MusicBeatState {
 		FlxG.collide(player, brickGroup);
 		//FlxG.collide(player, doorGroup);
 		FlxG.collide(player, platformGroup);
+	}
+
+	override function destroy()
+	{
+		if (transparent_bg)
+			resetWindow();
+		super.destroy();
 	}
 
 	function trophyCallback(spr:FlxSprite) {
@@ -389,5 +434,16 @@ class CourseState extends MusicBeatState {
 				var newCamEffects:Array<BitmapFilter> = [];
 				mainCam.setFilters(newCamEffects);
 		}
+	}
+
+	public function resetWindow() {
+		windowCoords = [1280, 720];
+		windowSizeCoords = [100, 10];
+		WindowUtils.getWindowsBackward();
+		WindowUtils.setWindowSize(_window, windowSizeCoords[0], windowSizeCoords[1]);
+		WindowUtils.setWindowCoords(_window, windowCoords[0], windowCoords[1]);
+		WindowUtils.setWindowResizable(_window, true);
+		if (_window.title != _gameName) WindowUtils.setWindowTitle(_window, _gameName);	
+		if (immovableWindow) immovableWindow = false;
 	}
 }

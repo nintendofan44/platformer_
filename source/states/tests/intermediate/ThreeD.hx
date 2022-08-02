@@ -1,5 +1,6 @@
 package states.tests.intermediate;
 
+import flixel.util.FlxDestroyUtil;
 import helpers.AssetPaths;
 import away3d.cameras.*;
 import away3d.containers.*;
@@ -106,7 +107,7 @@ class ThreeD extends MusicBeatState {
 
 		if (cam != null) {
 			cam.flashSprite.addChild(view);
-			cam.flashSprite.addChild(new AwayStats(view));
+			//cam.flashSprite.addChild(new AwayStats(view)); // comment out debug thing
 		}
 	}
 
@@ -217,6 +218,13 @@ class ThreeD extends MusicBeatState {
 		onResizeScreen();
 	}
 
+	private function closeListeners(cam:FlxCameraCustom):Void {
+		cam.flashSprite.removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+		Lib.current.stage.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		Lib.current.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		Lib.current.stage.removeEventListener(Event.RESIZE, onResizeScreen);
+	}
+
 	/**
 	 * Navigation and render loop
 	 */
@@ -265,5 +273,16 @@ class ThreeD extends MusicBeatState {
 	private function onResizeScreen(event:Event = null):Void {
 		view.width = Lib.current.stage.stageWidth;
 		view.height = Lib.current.stage.stageHeight;
+	}
+
+	override function update(elapsed:Float) {
+		if (controls.BACK) {
+			hudCam.visible = false;
+			closeListeners(hudCam);
+			FlxDestroyUtil.removeChild(hudCam.flashSprite, view);
+			MusicBeatState.switchState(new TitleScreen());
+		}
+
+		super.update(elapsed);
 	}
 }

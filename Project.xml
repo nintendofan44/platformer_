@@ -57,7 +57,7 @@
 		<library name="textures" preload="false" />
 	</section>
 
-	<define name="BUILD_CRASH_DIALOG" />
+	<!--<define name="BUILD_CRASH_DIALOG" />-->
 
 	<assets path="assets/shared" library="shared" exclude="*.ogg" if="web"/>
 	<assets path="assets/shared" library="shared" exclude="*.mp3" unless="web"/>
@@ -74,6 +74,7 @@
 	<haxelib name="flixel-addons" />
 	<haxelib name="flixel-ui" />
 	<haxelib name="hscript" />
+	<haxelib name="hxcpp" />
 	<haxelib name="away3d" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->

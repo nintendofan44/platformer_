@@ -33,7 +33,7 @@ class Tree extends MusicBeatState {
 	private var scene:Scene3D;
 	private var cameraThing:Camera3D;
 	private var view:View3D;
-	private var awayStats:AwayStats;
+	//private var awayStats:AwayStats; // comment out debug thing
 	private var cameraController:HoverController;
 
 	// light objects
@@ -148,10 +148,11 @@ class Tree extends MusicBeatState {
 		// setup controller to be used on the camera
 		cameraController = new HoverController(cameraThing, null, 0, 10, 25000, 0, 70);
 
-		cam.flashSprite.addChild(view);
-
-		awayStats = new AwayStats(view);
-		cam.flashSprite.addChild(awayStats);
+		if (cam != null) {
+			cam.flashSprite.addChild(view);
+			//awayStats = new AwayStats(view); // comment out debug thing
+			//cam.flashSprite.addChild(awayStats);
+		}
 	}
 
 	/**
@@ -289,6 +290,15 @@ class Tree extends MusicBeatState {
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 		onResizeScreen();
+	}
+
+	private function closeListeners(cam:FlxCamera):Void {
+		cam.flashSprite.removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+		view.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		view.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		Lib.current.stage.removeEventListener(Event.RESIZE, onResizeScreen);
+		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 	}
 
 	public function generateTree():Void {
@@ -459,7 +469,7 @@ class Tree extends MusicBeatState {
 	private function onResizeScreen(event:Event = null):Void {
 		view.width = Lib.current.stage.stageWidth;
 		view.height = Lib.current.stage.stageHeight;
-		awayStats.x = Lib.current.stage.stageWidth - awayStats.width;
+		//awayStats.x = Lib.current.stage.stageWidth - awayStats.width; // comment out debug thing
 	}
 
 	/**
@@ -491,5 +501,15 @@ class Tree extends MusicBeatState {
 		currentTreeCount++;
 		polyCount += treePolyCount;
 		updateLabels();
+	}
+
+	override function update(elapsed:Float) {
+		if (controls.BACK) {
+			hudCam.visible = false;
+			closeListeners(hudCam);
+			MusicBeatState.switchState(new TitleScreen());
+		}
+
+		super.update(elapsed);
 	}
 }
